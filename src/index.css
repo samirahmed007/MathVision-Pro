@@ -1,0 +1,384 @@
+@import "tailwindcss";
+
+/* Force dark mode and fix Chrome display issues */
+:root {
+  color-scheme: dark;
+  --tw-bg-opacity: 1;
+}
+
+/* Base HTML and body styles - critical for Chrome */
+html {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #030712 !important;
+  color: #f9fafb !important;
+  min-height: 100%;
+}
+
+body {
+  background-color: #030712 !important;
+  color: #f9fafb !important;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  background-color: #030712 !important;
+  min-height: 100vh;
+}
+
+/* Force background colors in Chrome */
+.bg-gray-950 { background-color: #030712 !important; }
+.bg-gray-900 { background-color: #111827 !important; }
+.bg-gray-800 { background-color: #1f2937 !important; }
+.bg-gray-700 { background-color: #374151 !important; }
+.bg-gray-600 { background-color: #4b5563 !important; }
+
+/* Force text colors in Chrome */
+.text-white { color: #ffffff !important; }
+.text-gray-100 { color: #f3f4f6 !important; }
+.text-gray-200 { color: #e5e7eb !important; }
+.text-gray-300 { color: #d1d5db !important; }
+.text-gray-400 { color: #9ca3af !important; }
+.text-gray-500 { color: #6b7280 !important; }
+
+/* Force border colors */
+.border-gray-700 { border-color: #374151 !important; }
+.border-gray-600 { border-color: #4b5563 !important; }
+.border-gray-800 { border-color: #1f2937 !important; }
+
+/* Ensure gradients work in Chrome */
+.bg-gradient-to-br {
+  background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)) !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111827;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+/* Selection */
+::selection {
+  background: rgba(139, 92, 246, 0.4);
+}
+
+/* Range input styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  background: #374151;
+  height: 6px;
+  border-radius: 3px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -5px;
+  background-color: #8b5cf6;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  background-color: #7c3aed;
+}
+
+input[type="range"]::-moz-range-track {
+  background: #374151;
+  height: 6px;
+  border-radius: 3px;
+}
+
+input[type="range"]::-moz-range-thumb {
+  background-color: #8b5cf6;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/* KaTeX overrides for dark mode */
+.katex {
+  font-size: 1.2em;
+}
+
+/* KaTeX on white background (preview areas) */
+.bg-white .katex {
+  color: #1f2937 !important;
+}
+
+/* KaTeX display mode */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+}
+
+.katex-display > .katex {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Ensure katex renders visible in white backgrounds */
+.katex .base {
+  display: inline-block;
+}
+
+/* Fix for katex-html visibility */
+.katex-html {
+  color: inherit;
+}
+
+/* Animation keyframes */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(139, 92, 246, 0);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+/* Select styling - fix Chrome display */
+select {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  border-color: #374151 !important;
+}
+
+select option {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+}
+
+/* Input styling - fix Chrome display */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="url"],
+input[type="number"],
+textarea {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  border-color: #374151 !important;
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+input[type="url"]::placeholder,
+input[type="number"]::placeholder,
+textarea::placeholder {
+  color: #6b7280 !important;
+}
+
+/* Focus states */
+*:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Prevent text selection on buttons */
+button {
+  user-select: none;
+}
+
+/* Smooth transitions for color changes */
+a, button, input, select, textarea {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+}
+
+/* Code block styling */
+pre, code {
+  font-family: 'SF Mono', 'Fira Code', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+  background-color: #111827 !important;
+  color: #e5e7eb !important;
+}
+
+/* Toast overrides */
+.react-hot-toast {
+  font-size: 14px;
+}
+
+/* Dropzone active state */
+.dropzone-active {
+  border-color: #8b5cf6 !important;
+  background-color: rgba(139, 92, 246, 0.1) !important;
+}
+
+/* Custom checkbox styling */
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #4b5563;
+  border-radius: 0.25rem;
+  background-color: #1f2937 !important;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #8b5cf6 !important;
+  border-color: #8b5cf6 !important;
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+input[type="checkbox"]:hover {
+  border-color: #8b5cf6;
+}
+
+/* Kbd styling */
+kbd {
+  font-family: inherit;
+  font-size: 0.75em;
+  font-weight: 500;
+  background-color: #374151 !important;
+  color: #e5e7eb !important;
+}
+
+/* Backdrop blur fallback */
+@supports not (backdrop-filter: blur(8px)) {
+  .backdrop-blur-sm {
+    background-color: rgba(17, 24, 39, 0.95);
+  }
+}
+
+/* Animation for loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Ensure canvas has correct aspect ratio */
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Better mobile tap targets */
+@media (max-width: 640px) {
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Hide scrollbar but keep functionality for horizontal scroll */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Fix for Chrome's light mode override */
+@media (prefers-color-scheme: light) {
+  html, body, #root {
+    background-color: #030712 !important;
+    color: #f9fafb !important;
+  }
+}
+
+/* Ensure all divs with dark backgrounds render properly */
+div[class*="bg-gray-9"],
+div[class*="bg-gray-8"],
+div[class*="bg-gray-7"] {
+  color: #f9fafb;
+}
+
+/* Card styling for Chrome */
+.card-dark {
+  background-color: #111827 !important;
+  border-color: #374151 !important;
+  color: #f9fafb !important;
+}
+
+/* Button styling for Chrome */
+button[class*="bg-purple"],
+button[class*="bg-violet"] {
+  color: #ffffff !important;
+}
+
+button[class*="bg-gray-700"],
+button[class*="bg-gray-800"] {
+  color: #f9fafb !important;
+}
+
+/* Table styling */
+table {
+  background-color: #111827 !important;
+}
+
+th, td {
+  border-color: #374151 !important;
+}
+
+/* Modal and overlay styling */
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.75) !important;
+}
+
+.modal-content {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+}
