@@ -552,7 +552,19 @@ export async function testProviderConnection(
 
 // Format conversion functions
 function convertToMathML(latex: string): string {
-  // Basic MathML conversion
+  // Prefer MathJax (when available) to produce robust Presentation MathML.
+  // Fall back to a simplified regex-based conversion when MathJax is not available.
+  try {
+    const w = window as any;
+    if (w.MathJax && typeof w.MathJax.tex2mml === 'function') {
+      // MathJax.tex2mml returns a <math>...</math> string
+      return w.MathJax.tex2mml(latex, { display: true });
+    }
+  } catch (e) {
+    // ignore and fallback
+  }
+
+  // Basic fallback conversion (simple presentation MathML)
   let mathml = latex
     .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<mfrac><mrow>$1</mrow><mrow>$2</mrow></mfrac>')
     .replace(/\\sqrt\{([^}]+)\}/g, '<msqrt><mrow>$1</mrow></msqrt>')
@@ -585,15 +597,32 @@ function convertToMathML(latex: string): string {
     .replace(/\\Leftarrow/g, '<mo>⇐</mo>')
     .replace(/([a-zA-Z])/g, '<mi>$1</mi>')
     .replace(/([0-9]+)/g, '<mn>$1</mn>');
-  
+
   return `<math xmlns="http://www.w3.org/1998/Math/MathML">\n  <mrow>\n    ${mathml}\n  </mrow>\n</math>`;
 }
 
 function convertToMathMLPresentation(latex: string): string {
+  // Presentation MathML: prefer MathJax if available, otherwise fall back
   return convertToMathML(latex);
 }
 
 function convertToMathMLContent(latex: string): string {
+  // Content MathML is harder to produce correctly from LaTeX. Use MathJax
+  // to convert to Presentation MathML and fall back to a simple content-like
+  // structure for environments where MathJax isn't available.
+  try {
+    const w = window as any;
+    if (w.MathJax && typeof w.MathJax.tex2mml === 'function') {
+      // MathJax can produce presentation MathML reliably; content MathML
+      // generation is not always available via tex2mml, so return presentation
+      // MathML as a safer alternative.
+      return w.MathJax.tex2mml(latex, { display: true });
+    }
+  } catch (e) {
+    // ignore and fallback
+  }
+
+  // Fallback content-like representation
   let content = latex
     .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<apply><divide/><ci>$1</ci><ci>$2</ci></apply>')
     .replace(/\\sqrt\{([^}]+)\}/g, '<apply><root/><ci>$1</ci></apply>')
@@ -603,7 +632,7 @@ function convertToMathMLContent(latex: string): string {
     .replace(/\\pi/g, '<ci>π</ci>')
     .replace(/([a-zA-Z])/g, '<ci>$1</ci>')
     .replace(/([0-9]+)/g, '<cn>$1</cn>');
-  
+
   return `<math xmlns="http://www.w3.org/1998/Math/MathML">\n  ${content}\n</math>`;
 }
 
