@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+import katex from 'katex';
 
 const OCR_PROMPT = `You are an expert mathematical OCR system. Analyze the image and extract all mathematical expressions accurately.
 
@@ -550,90 +551,252 @@ export async function testProviderConnection(
   }
 }
 
-// Format conversion functions
-function convertToMathML(latex: string): string {
-  // Prefer MathJax (when available) to produce robust Presentation MathML.
-  // Fall back to a simplified regex-based conversion when MathJax is not available.
-  try {
-    const w = window as any;
-    if (w.MathJax && typeof w.MathJax.tex2mml === 'function') {
-      // MathJax.tex2mml returns a <math>...</math> string
-      return w.MathJax.tex2mml(latex, { display: true });
-    }
-  } catch (e) {
-    // ignore and fallback
+// ============================================
+// MathML Conversion using KaTeX engine
+// ============================================
+
+// Clean LaTeX for MathML conversion
+function cleanLatexForMathML(latex: string): string {
+  let cleaned = latex.trim();
+  
+  // Remove markdown code blocks
+  cleaned = cleaned.replace(/^```(?:latex|tex|math)?\s*\n?/i, '');
+  cleaned = cleaned.replace(/\n?```\s*$/i, '');
+  
+  // Remove outer display math delimiters
+  if (cleaned.startsWith('$$') && cleaned.endsWith('$$')) {
+    cleaned = cleaned.slice(2, -2).trim();
+  } else if (cleaned.startsWith('$') && cleaned.endsWith('$') && !cleaned.slice(1, -1).includes('$')) {
+    cleaned = cleaned.slice(1, -1).trim();
+  } else if (cleaned.startsWith('\\[') && cleaned.endsWith('\\]')) {
+    cleaned = cleaned.slice(2, -2).trim();
+  } else if (cleaned.startsWith('\\(') && cleaned.endsWith('\\)')) {
+    cleaned = cleaned.slice(2, -2).trim();
   }
-
-  // Basic fallback conversion (simple presentation MathML)
-  let mathml = latex
-    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<mfrac><mrow>$1</mrow><mrow>$2</mrow></mfrac>')
-    .replace(/\\sqrt\{([^}]+)\}/g, '<msqrt><mrow>$1</mrow></msqrt>')
-    .replace(/\\sqrt\[([^\]]+)\]\{([^}]+)\}/g, '<mroot><mrow>$2</mrow><mrow>$1</mrow></mroot>')
-    .replace(/\^{([^}]+)}/g, '<msup><mrow>$1</mrow></msup>')
-    .replace(/_{([^}]+)}/g, '<msub><mrow>$1</mrow></msub>')
-    .replace(/\\alpha/g, '<mi>α</mi>')
-    .replace(/\\beta/g, '<mi>β</mi>')
-    .replace(/\\gamma/g, '<mi>γ</mi>')
-    .replace(/\\delta/g, '<mi>δ</mi>')
-    .replace(/\\theta/g, '<mi>θ</mi>')
-    .replace(/\\pi/g, '<mi>π</mi>')
-    .replace(/\\sigma/g, '<mi>σ</mi>')
-    .replace(/\\omega/g, '<mi>ω</mi>')
-    .replace(/\\infty/g, '<mi>∞</mi>')
-    .replace(/\\sum/g, '<mo>∑</mo>')
-    .replace(/\\prod/g, '<mo>∏</mo>')
-    .replace(/\\int/g, '<mo>∫</mo>')
-    .replace(/\\pm/g, '<mo>±</mo>')
-    .replace(/\\times/g, '<mo>×</mo>')
-    .replace(/\\div/g, '<mo>÷</mo>')
-    .replace(/\\cdot/g, '<mo>·</mo>')
-    .replace(/\\leq/g, '<mo>≤</mo>')
-    .replace(/\\geq/g, '<mo>≥</mo>')
-    .replace(/\\neq/g, '<mo>≠</mo>')
-    .replace(/\\approx/g, '<mo>≈</mo>')
-    .replace(/\\rightarrow/g, '<mo>→</mo>')
-    .replace(/\\leftarrow/g, '<mo>←</mo>')
-    .replace(/\\Rightarrow/g, '<mo>⇒</mo>')
-    .replace(/\\Leftarrow/g, '<mo>⇐</mo>')
-    .replace(/([a-zA-Z])/g, '<mi>$1</mi>')
-    .replace(/([0-9]+)/g, '<mn>$1</mn>');
-
-  return `<math xmlns="http://www.w3.org/1998/Math/MathML">\n  <mrow>\n    ${mathml}\n  </mrow>\n</math>`;
+  
+  // Remove equation environment wrapper but keep contents
+  cleaned = cleaned.replace(/\\begin\{equation\*?\}\s*([\s\S]*?)\s*\\end\{equation\*?\}/g, '$1');
+  
+  return cleaned.trim();
 }
 
+// Convert non-ASCII characters to hexadecimal XML entities &#x...;
+function encodeNonAsciiToHex(str: string): string {
+  let result = '';
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i);
+    if (code > 127) {
+      result += '&#x' + code.toString(16).toUpperCase() + ';';
+    } else {
+      result += str[i];
+    }
+  }
+  return result;
+}
+
+// Format MathML XML with proper indentation
+function formatMathML(xml: string, useHexEntities: boolean = true): string {
+  // Remove existing whitespace between tags
+  let str = xml.replace(/>\s+</g, '><').trim();
+  
+  const parts = str.match(/(<[^>]+>|[^<]+)/g) || [];
+  let formatted = '';
+  let indent = 0;
+  
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    if (!part || !part.trim()) continue;
+    const trimmed = part.trim();
+    
+    if (trimmed.startsWith('</')) {
+      // Closing tag - decrease indent first
+      indent = Math.max(0, indent - 1);
+      formatted += '  '.repeat(indent) + trimmed + '\n';
+    } else if (trimmed.startsWith('<') && trimmed.endsWith('/>')) {
+      // Self-closing tag
+      formatted += '  '.repeat(indent) + trimmed + '\n';
+    } else if (trimmed.startsWith('<')) {
+      // Opening tag
+      // Check if this is an inline element: <tag>text</tag>
+      if (i + 2 < parts.length) {
+        const nextPart = (parts[i + 1] || '').trim();
+        const afterNext = (parts[i + 2] || '').trim();
+        if (nextPart && !nextPart.startsWith('<') && afterNext.startsWith('</')) {
+          // Inline element like <mi>x</mi>
+          const encodedContent = useHexEntities ? encodeNonAsciiToHex(nextPart) : nextPart;
+          formatted += '  '.repeat(indent) + trimmed + encodedContent + afterNext + '\n';
+          i += 2;
+          continue;
+        }
+      }
+      formatted += '  '.repeat(indent) + trimmed + '\n';
+      indent++;
+    } else {
+      // Text content - encode non-ASCII if needed
+      const encodedContent = useHexEntities ? encodeNonAsciiToHex(trimmed) : trimmed;
+      formatted += '  '.repeat(indent) + encodedContent + '\n';
+    }
+  }
+  
+  return formatted.trimEnd();
+}
+
+// Main MathML conversion using KaTeX engine
+function convertToMathML(latex: string): string {
+  try {
+    let processedLatex = cleanLatexForMathML(latex);
+    if (!processedLatex) return '<math xmlns="http://www.w3.org/1998/Math/MathML" display="block"></math>';
+    
+    // Check if expression has multiple lines without a wrapping environment
+    const hasEnvironment = /\\begin\{(aligned|align|align\*|gathered|gather|cases|matrix|bmatrix|pmatrix|vmatrix|Bmatrix|Vmatrix|smallmatrix|array|split|multline)\}/.test(processedLatex);
+    const hasNewlines = /\\\\(?!\s*\\end)/.test(processedLatex);
+    
+    if (hasNewlines && !hasEnvironment) {
+      // Wrap multi-line expressions in aligned environment
+      processedLatex = `\\begin{aligned}\n${processedLatex}\n\\end{aligned}`;
+    }
+    
+    // Use KaTeX to generate proper MathML
+    const rendered = katex.renderToString(processedLatex, {
+      output: 'mathml',
+      displayMode: true,
+      throwOnError: false,
+      strict: false,
+      trust: true,
+      macros: {
+        '\\R': '\\mathbb{R}',
+        '\\N': '\\mathbb{N}',
+        '\\Z': '\\mathbb{Z}',
+        '\\Q': '\\mathbb{Q}',
+        '\\C': '\\mathbb{C}',
+        '\\varphi': '\\phi',
+      },
+    });
+    
+    // Extract the <math> element from KaTeX output
+    const mathMatch = rendered.match(/<math[\s\S]*?<\/math>/);
+    if (!mathMatch) {
+      return `<math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mtext>${escapeXml(latex)}</mtext></mrow></math>`;
+    }
+    
+    let mathml = mathMatch[0];
+    
+    // Remove <semantics> wrapper and <annotation> element for cleaner output
+    mathml = mathml.replace(
+      /<semantics>\s*([\s\S]*?)\s*<annotation[^>]*>[\s\S]*?<\/annotation>\s*<\/semantics>/g,
+      '$1'
+    );
+    
+    // Ensure display="block" is present
+    if (!mathml.includes('display="block"') && !mathml.includes("display='block'")) {
+      mathml = mathml.replace('<math', '<math display="block"');
+    }
+    
+    // Ensure xmlns is present
+    if (!mathml.includes('xmlns=')) {
+      mathml = mathml.replace('<math', '<math xmlns="http://www.w3.org/1998/Math/MathML"');
+    }
+    
+    // Format with proper indentation
+    return formatMathML(mathml);
+  } catch (e) {
+    console.error('MathML conversion error:', e);
+    return `<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">\n  <mrow>\n    <mtext>${escapeXml(latex)}</mtext>\n  </mrow>\n</math>`;
+  }
+}
+
+// MathML Presentation (same as standard MathML - Presentation is the default)
 function convertToMathMLPresentation(latex: string): string {
-  // Presentation MathML: prefer MathJax if available, otherwise fall back
+  // Presentation MathML is the default output from KaTeX
   return convertToMathML(latex);
 }
 
+// MathML Content format (semantic representation)
 function convertToMathMLContent(latex: string): string {
-  // Content MathML is harder to produce correctly from LaTeX. Use MathJax
-  // to convert to Presentation MathML and fall back to a simple content-like
-  // structure for environments where MathJax isn't available.
   try {
-    const w = window as any;
-    if (w.MathJax && typeof w.MathJax.tex2mml === 'function') {
-      // MathJax can produce presentation MathML reliably; content MathML
-      // generation is not always available via tex2mml, so return presentation
-      // MathML as a safer alternative.
-      return w.MathJax.tex2mml(latex, { display: true });
+    let processedLatex = cleanLatexForMathML(latex);
+    if (!processedLatex) return '<math xmlns="http://www.w3.org/1998/Math/MathML"></math>';
+    
+    // First generate Presentation MathML via KaTeX
+    const hasEnvironment = /\\begin\{(aligned|align|align\*|gathered|gather|cases|matrix|bmatrix|pmatrix|vmatrix|Bmatrix|Vmatrix|smallmatrix|array|split|multline)\}/.test(processedLatex);
+    const hasNewlines = /\\\\(?!\s*\\end)/.test(processedLatex);
+    
+    if (hasNewlines && !hasEnvironment) {
+      processedLatex = `\\begin{aligned}\n${processedLatex}\n\\end{aligned}`;
     }
+    
+    const rendered = katex.renderToString(processedLatex, {
+      output: 'mathml',
+      displayMode: true,
+      throwOnError: false,
+      strict: false,
+      trust: true,
+    });
+    
+    const mathMatch = rendered.match(/<math[\s\S]*?<\/math>/);
+    if (!mathMatch) {
+      return `<math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mtext>${escapeXml(latex)}</mtext></mrow></math>`;
+    }
+    
+    let mathml = mathMatch[0];
+    
+    // Remove semantics/annotation wrapper
+    mathml = mathml.replace(
+      /<semantics>\s*([\s\S]*?)\s*<annotation[^>]*>[\s\S]*?<\/annotation>\s*<\/semantics>/g,
+      '$1'
+    );
+    
+    // Convert Presentation MathML to Content MathML
+    // Replace presentation elements with content equivalents
+    let content = mathml;
+    
+    // Convert <mo>+</mo> to <plus/>
+    content = content.replace(/<mo[^>]*>\+<\/mo>/g, '<plus/>');
+    content = content.replace(/<mo[^>]*>−<\/mo>/g, '<minus/>');
+    content = content.replace(/<mo[^>]*>×<\/mo>/g, '<times/>');
+    content = content.replace(/<mo[^>]*>=<\/mo>/g, '<eq/>');
+    content = content.replace(/<mo[^>]*>&lt;<\/mo>/g, '<lt/>');
+    content = content.replace(/<mo[^>]*>&gt;<\/mo>/g, '<gt/>');
+    content = content.replace(/<mo[^>]*>≤<\/mo>/g, '<leq/>');
+    content = content.replace(/<mo[^>]*>≥<\/mo>/g, '<geq/>');
+    content = content.replace(/<mo[^>]*>≠<\/mo>/g, '<neq/>');
+    
+    // Replace <mi> with <ci> and <mn> with <cn>
+    content = content.replace(/<mi([^>]*)>([\s\S]*?)<\/mi>/g, '<ci$1>$2</ci>');
+    content = content.replace(/<mn([^>]*)>([\s\S]*?)<\/mn>/g, '<cn$1>$2</cn>');
+    
+    // Replace mfrac with apply>divide
+    content = content.replace(/<mfrac>/g, '<apply><divide/>');
+    content = content.replace(/<\/mfrac>/g, '</apply>');
+    
+    // Replace msqrt with apply>root
+    content = content.replace(/<msqrt>/g, '<apply><root/>');
+    content = content.replace(/<\/msqrt>/g, '</apply>');
+    
+    // Replace msup with apply>power
+    content = content.replace(/<msup>/g, '<apply><power/>');
+    content = content.replace(/<\/msup>/g, '</apply>');
+    
+    // Ensure xmlns
+    if (!content.includes('xmlns=')) {
+      content = content.replace('<math', '<math xmlns="http://www.w3.org/1998/Math/MathML"');
+    }
+    
+    return formatMathML(content);
   } catch (e) {
-    // ignore and fallback
+    console.error('MathML Content conversion error:', e);
+    return `<math xmlns="http://www.w3.org/1998/Math/MathML">\n  <mrow>\n    <mtext>${escapeXml(latex)}</mtext>\n  </mrow>\n</math>`;
   }
+}
 
-  // Fallback content-like representation
-  let content = latex
-    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<apply><divide/><ci>$1</ci><ci>$2</ci></apply>')
-    .replace(/\\sqrt\{([^}]+)\}/g, '<apply><root/><ci>$1</ci></apply>')
-    .replace(/\^{([^}]+)}/g, '<apply><power/><ci>$1</ci></apply>')
-    .replace(/\\alpha/g, '<ci>α</ci>')
-    .replace(/\\beta/g, '<ci>β</ci>')
-    .replace(/\\pi/g, '<ci>π</ci>')
-    .replace(/([a-zA-Z])/g, '<ci>$1</ci>')
-    .replace(/([0-9]+)/g, '<cn>$1</cn>');
-
-  return `<math xmlns="http://www.w3.org/1998/Math/MathML">\n  ${content}\n</math>`;
+// Escape XML special characters
+function escapeXml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 }
 
 function convertToAsciiMath(latex: string): string {
@@ -774,16 +937,22 @@ function convertToMarkdown(latex: string): string {
 }
 
 function convertToHTML(latex: string): string {
-  return `<!DOCTYPE html>
-<html>
+  // Generate MathML for the HTML output
+  const mathml = convertToMathML(latex);
+  // Flatten MathML to single line for the HTML table cell
+  const mathmlOneLine = mathml.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim();
+  
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:svg="http://www.w3.org/2000/svg" epub:prefix="index: http://www.index.com/" xml:lang="en" lang="en">
 <head>
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<title>MathVision Pro Output</title>
 </head>
-<body>
-  <div class="math">
-    $$${latex}$$
-  </div>
+<body epub:type="bodymatter chapter">
+<table border="1">
+<tbody>
+<tr><td style="text-align: right;"><img src="images/math-001.png" alt=""/></td><td>${mathmlOneLine}</td></tr>
+</tbody>
+</table>
 </body>
 </html>`;
 }

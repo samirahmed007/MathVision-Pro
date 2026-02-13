@@ -1,4 +1,12 @@
-@import "tailwindcss";
+:root {
+  color-scheme: dark;
+  --tw-bg-opacity: 1;
+}
+
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Force dark mode and fix Chrome display issues */
 :root {
@@ -329,6 +337,29 @@ canvas {
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Symbol palette scrollbar */
+.symbol-palette-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.symbol-palette-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.symbol-palette-scroll::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+/* Symbol palette button items - prevent overlap */
+.symbol-palette-scroll button {
+  box-sizing: border-box;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Fix for Chrome's light mode override */

@@ -631,17 +631,32 @@ export function OCRPage() {
             initialValue={editorLatex}
             onChange={(value) => {
               setEditorLatex(value);
-              // Update the current results with edited LaTeX
+            }}
+            onPushToOutput={(value) => {
+              // Convert LaTeX and update the Output Panel
+              const convertedFormats = convertLatexToFormats(value);
+              const outputs: Record<string, string> = {
+                latex: value,
+                ...convertedFormats,
+              };
+              
               if (currentResults) {
-                const convertedFormats = convertLatexToFormats(value);
                 setCurrentResults({
                   ...currentResults,
-                  outputs: {
-                    latex: value,
-                    ...convertedFormats,
-                  },
+                  outputs,
+                });
+              } else {
+                setCurrentResults({
+                  id: Date.now().toString(),
+                  imageUrl: currentImage || '',
+                  timestamp: new Date(),
+                  provider: 'Editor',
+                  model: 'Manual Input',
+                  outputs,
+                  processingTime: 0,
                 });
               }
+              toast.success('LaTeX converted and pushed to Output!', { icon: '🔄', duration: 2000 });
             }}
           />
         </div>

@@ -232,17 +232,18 @@ const defaultProviders: AIProvider[] = [
 
 const defaultModels: AIModel[] = [
   // Google Gemini - Updated with all available models
-  { id: 'gemini-3-pro', providerId: 'google', modelId: 'gemini-3-pro-preview', displayName: 'Gemini 3 Pro Preview', supportsVision: true, isFree: true, isEnabled: true, isDefault: false, isRecommended: true, speedRating: 4, accuracyRating: 5 },
-  { id: 'gemini-3-flash', providerId: 'google', modelId: 'gemini-3-flash-preview', displayName: 'Gemini 3 Flash Preview', supportsVision: true, isFree: true, isEnabled: true, isDefault: false, speedRating: 5, accuracyRating: 5 },
-  { id: 'gemini-2.5-pro', providerId: 'google', modelId: 'gemini-2.5-pro-preview-06-05', displayName: 'Gemini 2.5 Pro Preview', supportsVision: true, isFree: true, isEnabled: true, isDefault: false, isRecommended: true, speedRating: 4, accuracyRating: 5 },
-  { id: 'gemini-2.5-flash', providerId: 'google', modelId: 'gemini-2.5-flash-preview-05-20', displayName: 'Gemini 2.5 Flash Preview', supportsVision: true, isFree: true, isEnabled: true, isDefault: true, speedRating: 5, accuracyRating: 4 },
+  // Only Gemini 3 Flash Preview and Gemini 2.5 Flash Lite enabled by default
+  { id: 'gemini-3-pro', providerId: 'google', modelId: 'gemini-3-pro-preview', displayName: 'Gemini 3 Pro Preview', supportsVision: true, isFree: true, isEnabled: false, isDefault: false, isRecommended: true, speedRating: 4, accuracyRating: 5 },
+  { id: 'gemini-3-flash', providerId: 'google', modelId: 'gemini-3-flash-preview', displayName: 'Gemini 3 Flash Preview', supportsVision: true, isFree: true, isEnabled: true, isDefault: true, isRecommended: true, speedRating: 5, accuracyRating: 5 },
+  { id: 'gemini-2.5-pro', providerId: 'google', modelId: 'gemini-2.5-pro-preview-06-05', displayName: 'Gemini 2.5 Pro Preview', supportsVision: true, isFree: true, isEnabled: false, isDefault: false, isRecommended: true, speedRating: 4, accuracyRating: 5 },
+  { id: 'gemini-2.5-flash', providerId: 'google', modelId: 'gemini-2.5-flash-preview-05-20', displayName: 'Gemini 2.5 Flash Preview', supportsVision: true, isFree: true, isEnabled: false, isDefault: false, speedRating: 5, accuracyRating: 4 },
   { id: 'gemini-2.5-flash-lite', providerId: 'google', modelId: 'gemini-2.5-flash-lite', displayName: 'Gemini 2.5 Flash Lite', supportsVision: true, isFree: true, isEnabled: true, isDefault: false, speedRating: 5, accuracyRating: 4 },
-  { id: 'gemini-2.5-flash-lite-preview', providerId: 'google', modelId: 'gemini-2.5-flash-lite-preview-09-2025', displayName: 'Gemini 2.5 Flash Lite Preview', supportsVision: true, isFree: true, isEnabled: true, isDefault: false, speedRating: 5, accuracyRating: 4 },
-  { id: 'gemini-2.0-flash', providerId: 'google', modelId: 'gemini-2.0-flash', displayName: 'Gemini 2.0 Flash', supportsVision: true, isFree: true, isEnabled: true, isDefault: false, speedRating: 5, accuracyRating: 4 },
-  { id: 'gemini-2.0-flash-lite', providerId: 'google', modelId: 'gemini-2.0-flash-lite', displayName: 'Gemini 2.0 Flash Lite', supportsVision: true, isFree: true, isEnabled: true, isDefault: false, speedRating: 5, accuracyRating: 3 },
-  { id: 'gemini-1.5-pro', providerId: 'google', modelId: 'gemini-1.5-pro', displayName: 'Gemini 1.5 Pro', supportsVision: true, isFree: true, isEnabled: true, isDefault: false, speedRating: 3, accuracyRating: 5 },
-  { id: 'gemini-1.5-flash', providerId: 'google', modelId: 'gemini-1.5-flash', displayName: 'Gemini 1.5 Flash', supportsVision: true, isFree: true, isEnabled: true, isDefault: false, speedRating: 5, accuracyRating: 4 },
-  { id: 'gemini-1.5-flash-8b', providerId: 'google', modelId: 'gemini-1.5-flash-8b', displayName: 'Gemini 1.5 Flash 8B', supportsVision: true, isFree: true, isEnabled: true, isDefault: false, speedRating: 5, accuracyRating: 3 },
+  { id: 'gemini-2.5-flash-lite-preview', providerId: 'google', modelId: 'gemini-2.5-flash-lite-preview-09-2025', displayName: 'Gemini 2.5 Flash Lite Preview', supportsVision: true, isFree: true, isEnabled: false, isDefault: false, speedRating: 5, accuracyRating: 4 },
+  { id: 'gemini-2.0-flash', providerId: 'google', modelId: 'gemini-2.0-flash', displayName: 'Gemini 2.0 Flash', supportsVision: true, isFree: true, isEnabled: false, isDefault: false, speedRating: 5, accuracyRating: 4 },
+  { id: 'gemini-2.0-flash-lite', providerId: 'google', modelId: 'gemini-2.0-flash-lite', displayName: 'Gemini 2.0 Flash Lite', supportsVision: true, isFree: true, isEnabled: false, isDefault: false, speedRating: 5, accuracyRating: 3 },
+  { id: 'gemini-1.5-pro', providerId: 'google', modelId: 'gemini-1.5-pro', displayName: 'Gemini 1.5 Pro', supportsVision: true, isFree: true, isEnabled: false, isDefault: false, speedRating: 3, accuracyRating: 5 },
+  { id: 'gemini-1.5-flash', providerId: 'google', modelId: 'gemini-1.5-flash', displayName: 'Gemini 1.5 Flash', supportsVision: true, isFree: true, isEnabled: false, isDefault: false, speedRating: 5, accuracyRating: 4 },
+  { id: 'gemini-1.5-flash-8b', providerId: 'google', modelId: 'gemini-1.5-flash-8b', displayName: 'Gemini 1.5 Flash 8B', supportsVision: true, isFree: true, isEnabled: false, isDefault: false, speedRating: 5, accuracyRating: 3 },
   
   // OpenRouter
   { id: 'qwen-vl-72b', providerId: 'openrouter', modelId: 'qwen/qwen2.5-vl-72b-instruct:free', displayName: 'Qwen 2.5 VL 72B (Free)', supportsVision: true, isFree: true, isEnabled: true, isDefault: true, isRecommended: true, speedRating: 3, accuracyRating: 5 },
@@ -295,7 +296,7 @@ export const outputFormats: OutputFormat[] = [
 
 const defaultSettings: UserSettings = {
   defaultProviderId: 'google',
-  defaultModelId: 'gemini-2.5-flash',
+  defaultModelId: 'gemini-3-flash',
   defaultOutputFormat: 'latex',
   autoCopyEnabled: true,
   autoCopyFormat: 'latex',

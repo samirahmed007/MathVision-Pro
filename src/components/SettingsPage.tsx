@@ -579,6 +579,87 @@ export function SettingsPage() {
         </button>
       </div>
 
+      {/* Global Default Provider & Model */}
+      <section className="space-y-4">
+        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+          <Star className="h-5 w-5 text-yellow-500" />
+          Default Provider & Model
+        </h3>
+        <div className="p-5 bg-gray-900/50 rounded-2xl border border-gray-800">
+          <p className="text-sm text-gray-400 mb-4">
+            Select the default provider and model used for OCR processing across the app.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-400">Default Provider</label>
+              <div className="relative">
+                <select
+                  value={settings.defaultProviderId}
+                  onChange={(e) => {
+                    const provId = e.target.value;
+                    updateSettings({ defaultProviderId: provId });
+                    // Auto-select default model for the new provider
+                    const defModel = models.find(m => m.providerId === provId && m.isDefault && m.isEnabled);
+                    const firstEnabled = models.find(m => m.providerId === provId && m.isEnabled);
+                    if (defModel) {
+                      updateSettings({ defaultModelId: defModel.id });
+                    } else if (firstEnabled) {
+                      updateSettings({ defaultModelId: firstEnabled.id });
+                    }
+                  }}
+                  className="w-full appearance-none px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-violet-500 pr-10"
+                >
+                  {providers.filter(p => p.isEnabled).map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.icon} {p.displayName}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-400">Default Model</label>
+              <div className="relative">
+                <select
+                  value={settings.defaultModelId}
+                  onChange={(e) => {
+                    updateSettings({ defaultModelId: e.target.value });
+                    // Also set it as provider-level default
+                    const selectedM = models.find(m => m.id === e.target.value);
+                    if (selectedM) {
+                      setDefaultModel(selectedM.providerId, selectedM.id);
+                    }
+                  }}
+                  className="w-full appearance-none px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-violet-500 pr-10"
+                >
+                  {models
+                    .filter(m => m.providerId === settings.defaultProviderId && m.isEnabled)
+                    .map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.displayName} {m.isFree ? '✓ Free' : '$ Paid'} {m.isDefault ? '⭐' : ''}
+                      </option>
+                    ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" />
+              </div>
+            </div>
+          </div>
+          {(() => {
+            const currentModel = models.find(m => m.id === settings.defaultModelId);
+            const currentProv = providers.find(p => p.id === settings.defaultProviderId);
+            return currentModel && currentProv ? (
+              <div className="mt-3 p-3 bg-violet-500/10 border border-violet-500/20 rounded-xl">
+                <p className="text-sm text-violet-300">
+                  <span className="font-medium">Active:</span> {currentProv.icon} {currentProv.displayName} → {currentModel.displayName}
+                  {currentModel.isFree ? ' (Free)' : ' (Paid)'}
+                </p>
+              </div>
+            ) : null;
+          })()}
+        </div>
+      </section>
+
       {/* AI Providers Section */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">

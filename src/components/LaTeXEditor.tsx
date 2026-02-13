@@ -15,7 +15,9 @@ import {
   ArrowRight,
   ChevronDown,
   ChevronRight,
-  X
+  X,
+  ArrowUpRight,
+  RotateCcw,
 } from 'lucide-react';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
@@ -24,13 +26,29 @@ interface LaTeXEditorProps {
   initialValue?: string;
   onChange?: (value: string) => void;
   onClose?: () => void;
+  onPushToOutput?: (latex: string) => void;
+}
+
+interface SymbolItem {
+  latex: string;
+  display: string;
+  name: string;
+  wide?: boolean; // for items that need more width
+}
+
+interface SymbolCategory {
+  name: string;
+  icon: string;
+  columns?: number; // override default grid columns
+  symbols: SymbolItem[];
 }
 
 // Symbol categories with extensive symbols like MathType
-const symbolCategories = [
+const symbolCategories: SymbolCategory[] = [
   {
     name: 'Greek Letters',
     icon: 'α',
+    columns: 7,
     symbols: [
       { latex: '\\alpha', display: 'α', name: 'alpha' },
       { latex: '\\beta', display: 'β', name: 'beta' },
@@ -77,6 +95,7 @@ const symbolCategories = [
   {
     name: 'Operators',
     icon: '±',
+    columns: 7,
     symbols: [
       { latex: '+', display: '+', name: 'plus' },
       { latex: '-', display: '−', name: 'minus' },
@@ -102,6 +121,7 @@ const symbolCategories = [
   {
     name: 'Relations',
     icon: '=',
+    columns: 7,
     symbols: [
       { latex: '=', display: '=', name: 'equals' },
       { latex: '\\neq', display: '≠', name: 'not equal' },
@@ -130,6 +150,7 @@ const symbolCategories = [
   {
     name: 'Set Theory',
     icon: '∈',
+    columns: 7,
     symbols: [
       { latex: '\\in', display: '∈', name: 'in' },
       { latex: '\\notin', display: '∉', name: 'not in' },
@@ -155,6 +176,7 @@ const symbolCategories = [
   {
     name: 'Logic',
     icon: '∀',
+    columns: 6,
     symbols: [
       { latex: '\\forall', display: '∀', name: 'for all' },
       { latex: '\\exists', display: '∃', name: 'exists' },
@@ -179,6 +201,7 @@ const symbolCategories = [
   {
     name: 'Arrows',
     icon: '→',
+    columns: 6,
     symbols: [
       { latex: '\\rightarrow', display: '→', name: 'right arrow' },
       { latex: '\\leftarrow', display: '←', name: 'left arrow' },
@@ -207,6 +230,7 @@ const symbolCategories = [
   {
     name: 'Calculus',
     icon: '∫',
+    columns: 5,
     symbols: [
       { latex: '\\int', display: '∫', name: 'integral' },
       { latex: '\\iint', display: '∬', name: 'double integral' },
@@ -222,81 +246,86 @@ const symbolCategories = [
       { latex: '\\mathrm{d}x', display: 'dx', name: 'dx' },
       { latex: '\\mathrm{d}y', display: 'dy', name: 'dy' },
       { latex: '\\mathrm{d}t', display: 'dt', name: 'dt' },
-      { latex: "\\frac{\\mathrm{d}}{\\mathrm{d}x}", display: 'd/dx', name: 'derivative' },
-      { latex: "\\frac{\\partial}{\\partial x}", display: '∂/∂x', name: 'partial derivative' },
+      { latex: "\\frac{\\mathrm{d}}{\\mathrm{d}x}", display: 'd/dx', name: 'derivative', wide: true },
+      { latex: "\\frac{\\partial}{\\partial x}", display: '∂/∂x', name: 'partial derivative', wide: true },
     ]
   },
   {
     name: 'Functions',
-    icon: 'f',
+    icon: 'f(x)',
+    columns: 4,
     symbols: [
-      { latex: '\\sin', display: 'sin', name: 'sine' },
-      { latex: '\\cos', display: 'cos', name: 'cosine' },
-      { latex: '\\tan', display: 'tan', name: 'tangent' },
-      { latex: '\\cot', display: 'cot', name: 'cotangent' },
-      { latex: '\\sec', display: 'sec', name: 'secant' },
-      { latex: '\\csc', display: 'csc', name: 'cosecant' },
-      { latex: '\\arcsin', display: 'arcsin', name: 'arcsine' },
-      { latex: '\\arccos', display: 'arccos', name: 'arccosine' },
-      { latex: '\\arctan', display: 'arctan', name: 'arctangent' },
-      { latex: '\\sinh', display: 'sinh', name: 'hyperbolic sine' },
-      { latex: '\\cosh', display: 'cosh', name: 'hyperbolic cosine' },
-      { latex: '\\tanh', display: 'tanh', name: 'hyperbolic tangent' },
-      { latex: '\\log', display: 'log', name: 'logarithm' },
-      { latex: '\\ln', display: 'ln', name: 'natural log' },
-      { latex: '\\lg', display: 'lg', name: 'log base 2' },
-      { latex: '\\exp', display: 'exp', name: 'exponential' },
-      { latex: '\\det', display: 'det', name: 'determinant' },
-      { latex: '\\dim', display: 'dim', name: 'dimension' },
-      { latex: '\\ker', display: 'ker', name: 'kernel' },
-      { latex: '\\gcd', display: 'gcd', name: 'gcd' },
-      { latex: '\\min', display: 'min', name: 'minimum' },
-      { latex: '\\max', display: 'max', name: 'maximum' },
-      { latex: '\\sup', display: 'sup', name: 'supremum' },
-      { latex: '\\inf', display: 'inf', name: 'infimum' },
+      { latex: '\\sin', display: 'sin', name: 'sine', wide: true },
+      { latex: '\\cos', display: 'cos', name: 'cosine', wide: true },
+      { latex: '\\tan', display: 'tan', name: 'tangent', wide: true },
+      { latex: '\\cot', display: 'cot', name: 'cotangent', wide: true },
+      { latex: '\\sec', display: 'sec', name: 'secant', wide: true },
+      { latex: '\\csc', display: 'csc', name: 'cosecant', wide: true },
+      { latex: '\\arcsin', display: 'arcsin', name: 'arcsine', wide: true },
+      { latex: '\\arccos', display: 'arccos', name: 'arccosine', wide: true },
+      { latex: '\\arctan', display: 'arctan', name: 'arctangent', wide: true },
+      { latex: '\\sinh', display: 'sinh', name: 'hyperbolic sine', wide: true },
+      { latex: '\\cosh', display: 'cosh', name: 'hyperbolic cosine', wide: true },
+      { latex: '\\tanh', display: 'tanh', name: 'hyperbolic tangent', wide: true },
+      { latex: '\\log', display: 'log', name: 'logarithm', wide: true },
+      { latex: '\\ln', display: 'ln', name: 'natural log', wide: true },
+      { latex: '\\lg', display: 'lg', name: 'log base 2', wide: true },
+      { latex: '\\exp', display: 'exp', name: 'exponential', wide: true },
+      { latex: '\\det', display: 'det', name: 'determinant', wide: true },
+      { latex: '\\dim', display: 'dim', name: 'dimension', wide: true },
+      { latex: '\\ker', display: 'ker', name: 'kernel', wide: true },
+      { latex: '\\gcd', display: 'gcd', name: 'gcd', wide: true },
+      { latex: '\\min', display: 'min', name: 'minimum', wide: true },
+      { latex: '\\max', display: 'max', name: 'maximum', wide: true },
+      { latex: '\\sup', display: 'sup', name: 'supremum', wide: true },
+      { latex: '\\inf', display: 'inf', name: 'infimum', wide: true },
     ]
   },
   {
     name: 'Structures',
     icon: '√',
+    columns: 3,
     symbols: [
-      { latex: '\\frac{a}{b}', display: 'a/b', name: 'fraction' },
-      { latex: '\\sqrt{x}', display: '√x', name: 'square root' },
-      { latex: '\\sqrt[n]{x}', display: 'ⁿ√x', name: 'nth root' },
-      { latex: 'x^{n}', display: 'xⁿ', name: 'power' },
-      { latex: 'x_{n}', display: 'xₙ', name: 'subscript' },
-      { latex: 'x^{a}_{b}', display: 'xᵃᵦ', name: 'super and sub' },
-      { latex: '\\binom{n}{k}', display: '(n k)', name: 'binomial' },
-      { latex: '\\sum_{i=1}^{n}', display: 'Σᵢ₌₁ⁿ', name: 'sum with limits' },
-      { latex: '\\prod_{i=1}^{n}', display: '∏ᵢ₌₁ⁿ', name: 'product with limits' },
-      { latex: '\\int_{a}^{b}', display: '∫ₐᵇ', name: 'definite integral' },
-      { latex: '\\lim_{x \\to a}', display: 'limₓ→ₐ', name: 'limit notation' },
-      { latex: '\\overline{x}', display: 'x̄', name: 'overline' },
-      { latex: '\\underline{x}', display: 'x̲', name: 'underline' },
-      { latex: '\\hat{x}', display: 'x̂', name: 'hat' },
-      { latex: '\\tilde{x}', display: 'x̃', name: 'tilde' },
-      { latex: '\\vec{x}', display: 'x⃗', name: 'vector' },
-      { latex: '\\dot{x}', display: 'ẋ', name: 'dot' },
-      { latex: '\\ddot{x}', display: 'ẍ', name: 'double dot' },
-      { latex: '\\bar{x}', display: 'x̄', name: 'bar' },
+      { latex: '\\frac{a}{b}', display: 'a/b', name: 'fraction', wide: true },
+      { latex: '\\sqrt{x}', display: '√x', name: 'square root', wide: true },
+      { latex: '\\sqrt[n]{x}', display: 'ⁿ√x', name: 'nth root', wide: true },
+      { latex: 'x^{n}', display: 'xⁿ', name: 'power', wide: true },
+      { latex: 'x_{n}', display: 'xₙ', name: 'subscript', wide: true },
+      { latex: 'x^{a}_{b}', display: 'xᵃᵦ', name: 'super and sub', wide: true },
+      { latex: '\\binom{n}{k}', display: '(n k)', name: 'binomial', wide: true },
+      { latex: '\\sum_{i=1}^{n}', display: 'Σᵢ₌₁ⁿ', name: 'sum with limits', wide: true },
+      { latex: '\\prod_{i=1}^{n}', display: '∏ᵢ₌₁ⁿ', name: 'product with limits', wide: true },
+      { latex: '\\int_{a}^{b}', display: '∫ₐᵇ', name: 'definite integral', wide: true },
+      { latex: '\\lim_{x \\to a}', display: 'limₓ→ₐ', name: 'limit notation', wide: true },
+      { latex: '\\overline{x}', display: 'x̄', name: 'overline', wide: true },
+      { latex: '\\underline{x}', display: 'x̲', name: 'underline', wide: true },
+      { latex: '\\hat{x}', display: 'x̂', name: 'hat', wide: true },
+      { latex: '\\tilde{x}', display: 'x̃', name: 'tilde', wide: true },
+      { latex: '\\vec{x}', display: 'x⃗', name: 'vector', wide: true },
+      { latex: '\\dot{x}', display: 'ẋ', name: 'dot', wide: true },
+      { latex: '\\ddot{x}', display: 'ẍ', name: 'double dot', wide: true },
+      { latex: '\\bar{x}', display: 'x̄', name: 'bar', wide: true },
     ]
   },
   {
     name: 'Matrices',
-    icon: '[ ]',
+    icon: '▦',
+    columns: 2,
     symbols: [
-      { latex: '\\begin{matrix} a & b \\\\ c & d \\end{matrix}', display: 'matrix', name: 'matrix' },
-      { latex: '\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}', display: '(matrix)', name: 'pmatrix' },
-      { latex: '\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}', display: '[matrix]', name: 'bmatrix' },
-      { latex: '\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}', display: '|matrix|', name: 'vmatrix' },
-      { latex: '\\begin{Vmatrix} a & b \\\\ c & d \\end{Vmatrix}', display: '‖matrix‖', name: 'Vmatrix' },
-      { latex: '\\begin{cases} a & \\text{if } x > 0 \\\\ b & \\text{otherwise} \\end{cases}', display: 'cases', name: 'cases' },
-      { latex: '\\begin{array}{cc} a & b \\\\ c & d \\end{array}', display: 'array', name: 'array' },
+      { latex: '\\begin{matrix} a & b \\\\ c & d \\end{matrix}', display: 'plain matrix', name: 'matrix', wide: true },
+      { latex: '\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}', display: '( matrix )', name: 'pmatrix', wide: true },
+      { latex: '\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}', display: '[ matrix ]', name: 'bmatrix', wide: true },
+      { latex: '\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}', display: '| matrix |', name: 'vmatrix', wide: true },
+      { latex: '\\begin{Vmatrix} a & b \\\\ c & d \\end{Vmatrix}', display: '‖ matrix ‖', name: 'Vmatrix', wide: true },
+      { latex: '\\begin{cases} a & \\text{if } x > 0 \\\\ b & \\text{otherwise} \\end{cases}', display: '{ cases', name: 'cases', wide: true },
+      { latex: '\\begin{array}{cc} a & b \\\\ c & d \\end{array}', display: 'array', name: 'array', wide: true },
+      { latex: '\\begin{aligned} a &= b \\\\ c &= d \\end{aligned}', display: 'aligned', name: 'aligned', wide: true },
     ]
   },
   {
     name: 'Brackets',
     icon: '( )',
+    columns: 6,
     symbols: [
       { latex: '(', display: '(', name: 'left paren' },
       { latex: ')', display: ')', name: 'right paren' },
@@ -312,14 +341,15 @@ const symbolCategories = [
       { latex: '\\rfloor', display: '⌋', name: 'right floor' },
       { latex: '\\lceil', display: '⌈', name: 'left ceiling' },
       { latex: '\\rceil', display: '⌉', name: 'right ceiling' },
-      { latex: '\\left( \\right)', display: '( )', name: 'auto paren' },
-      { latex: '\\left[ \\right]', display: '[ ]', name: 'auto bracket' },
-      { latex: '\\left\\{ \\right\\}', display: '{ }', name: 'auto brace' },
+      { latex: '\\left( \\right)', display: 'auto ( )', name: 'auto paren', wide: true },
+      { latex: '\\left[ \\right]', display: 'auto [ ]', name: 'auto bracket', wide: true },
+      { latex: '\\left\\{ \\right\\}', display: 'auto { }', name: 'auto brace', wide: true },
     ]
   },
   {
     name: 'Dots & Accents',
     icon: '⋯',
+    columns: 6,
     symbols: [
       { latex: '\\cdots', display: '⋯', name: 'center dots' },
       { latex: '\\ldots', display: '…', name: 'lower dots' },
@@ -343,15 +373,16 @@ const symbolCategories = [
   {
     name: 'Spacing',
     icon: '⎵',
+    columns: 2,
     symbols: [
-      { latex: '\\,', display: '(thin)', name: 'thin space' },
-      { latex: '\\:', display: '(med)', name: 'medium space' },
-      { latex: '\\;', display: '(thick)', name: 'thick space' },
-      { latex: '\\!', display: '(neg)', name: 'negative space' },
-      { latex: '\\quad', display: '(quad)', name: 'quad' },
-      { latex: '\\qquad', display: '(qquad)', name: 'double quad' },
-      { latex: '~', display: '(nbsp)', name: 'non-breaking' },
-      { latex: '\\text{ }', display: '(text)', name: 'text space' },
+      { latex: '\\,', display: 'thin space  \\,', name: 'thin space (3/18 em)', wide: true },
+      { latex: '\\:', display: 'medium space  \\:', name: 'medium space (4/18 em)', wide: true },
+      { latex: '\\;', display: 'thick space  \\;', name: 'thick space (5/18 em)', wide: true },
+      { latex: '\\!', display: 'neg thin space  \\!', name: 'negative thin space (-3/18 em)', wide: true },
+      { latex: '\\quad', display: 'quad space  \\quad', name: 'quad (1 em)', wide: true },
+      { latex: '\\qquad', display: 'double quad  \\qquad', name: 'double quad (2 em)', wide: true },
+      { latex: '~', display: 'non-breaking  ~', name: 'non-breaking space', wide: true },
+      { latex: '\\text{ }', display: 'text space  \\text{ }', name: 'text space', wide: true },
     ]
   },
 ];
@@ -375,7 +406,7 @@ const templates = [
   { name: 'System', latex: '\\begin{aligned} x + y &= 1 \\\\ x - y &= 2 \\end{aligned}', icon: '≡' },
 ];
 
-const LaTeXEditor: React.FC<LaTeXEditorProps> = ({ initialValue = '', onChange, onClose }) => {
+const LaTeXEditor: React.FC<LaTeXEditorProps> = ({ initialValue = '', onChange, onClose, onPushToOutput }) => {
   const [latex, setLatex] = useState(initialValue);
   const [showPreview, setShowPreview] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -396,13 +427,10 @@ const LaTeXEditor: React.FC<LaTeXEditorProps> = ({ initialValue = '', onChange, 
   useEffect(() => {
     if (latex.trim()) {
       try {
-        // Clean the LaTeX before rendering
         let cleanedLatex = latex.trim();
-        // Remove markdown code blocks
         cleanedLatex = cleanedLatex.replace(/```latex\n?/g, '').replace(/```\n?/g, '');
-        // Remove display math delimiters
         cleanedLatex = cleanedLatex.replace(/^\$\$([\s\S]*)\$\$$/g, '$1');
-        cleanedLatex = cleanedLatex.replace(/^\$(.*)\$$/g, '$1');
+        cleanedLatex = cleanedLatex.replace(/^\$(.*)$$/g, '$1');
         cleanedLatex = cleanedLatex.replace(/^\\\[([\s\S]*)\\\]$/g, '$1');
         cleanedLatex = cleanedLatex.replace(/^\\\((.*)\\\)$/g, '$1');
         cleanedLatex = cleanedLatex.trim();
@@ -437,7 +465,6 @@ const LaTeXEditor: React.FC<LaTeXEditorProps> = ({ initialValue = '', onChange, 
     setLatex(newValue);
     onChange?.(newValue);
     
-    // Add to history
     const newHistory = history.slice(0, historyIndex + 1);
     newHistory.push(newValue);
     setHistory(newHistory);
@@ -452,7 +479,6 @@ const LaTeXEditor: React.FC<LaTeXEditorProps> = ({ initialValue = '', onChange, 
       const newValue = latex.substring(0, start) + symbol + latex.substring(end);
       handleChange(newValue);
       
-      // Set cursor position after the inserted symbol
       setTimeout(() => {
         textarea.focus();
         const newPos = start + symbol.length;
@@ -470,10 +496,8 @@ const LaTeXEditor: React.FC<LaTeXEditorProps> = ({ initialValue = '', onChange, 
       const end = textarea.selectionEnd;
       const selectedText = latex.substring(start, end);
       
-      // If there's selected text, try to use it in the template
       let insertText = template;
       if (selectedText) {
-        // Replace first placeholder with selected text
         insertText = template.replace(/expression|numerator|base|f\(x\)|a/, selectedText);
       }
       
@@ -524,6 +548,19 @@ const LaTeXEditor: React.FC<LaTeXEditorProps> = ({ initialValue = '', onChange, 
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error('Failed to copy:', error);
+    }
+  };
+
+  // Get grid class based on column count
+  const getGridClass = (cols: number) => {
+    switch (cols) {
+      case 2: return 'grid-cols-2';
+      case 3: return 'grid-cols-3';
+      case 4: return 'grid-cols-4';
+      case 5: return 'grid-cols-5';
+      case 6: return 'grid-cols-6';
+      case 7: return 'grid-cols-7';
+      default: return 'grid-cols-6';
     }
   };
 
@@ -617,6 +654,32 @@ const LaTeXEditor: React.FC<LaTeXEditorProps> = ({ initialValue = '', onChange, 
             </button>
           </div>
           <div className="flex items-center gap-1">
+            {onPushToOutput && (
+              <button
+                onClick={() => {
+                  if (latex.trim()) {
+                    onPushToOutput(latex);
+                  }
+                }}
+                disabled={!latex.trim()}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 hover:bg-violet-700 text-white rounded text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Convert & push to Output Panel"
+              >
+                <ArrowUpRight className="w-4 h-4" />
+                Push to Output
+              </button>
+            )}
+            {onPushToOutput && (
+              <button
+                onClick={() => {
+                  handleChange('');
+                }}
+                className="p-2 hover:bg-gray-700 rounded text-gray-400 hover:text-white"
+                title="Clear editor"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+            )}
             <button
               onClick={() => setShowPreview(!showPreview)}
               className={`p-2 rounded ${showPreview ? 'bg-blue-600' : 'hover:bg-gray-700'}`}
@@ -668,7 +731,7 @@ const LaTeXEditor: React.FC<LaTeXEditorProps> = ({ initialValue = '', onChange, 
 
       <div className="flex flex-col lg:flex-row">
         {/* Symbol Panel */}
-        <div className="lg:w-64 bg-gray-850 border-b lg:border-b-0 lg:border-r border-gray-700 max-h-96 lg:max-h-[500px] overflow-y-auto">
+        <div className="lg:w-72 bg-gray-850 border-b lg:border-b-0 lg:border-r border-gray-700 max-h-96 lg:max-h-[500px] overflow-y-auto symbol-palette-scroll">
           <div className="p-2">
             <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">
               Symbol Palette
@@ -680,21 +743,31 @@ const LaTeXEditor: React.FC<LaTeXEditorProps> = ({ initialValue = '', onChange, 
                   className="w-full flex items-center justify-between px-2 py-1.5 hover:bg-gray-700 rounded text-sm"
                 >
                   <span className="flex items-center gap-2">
-                    <span className="w-5 text-center text-base">{category.icon}</span>
-                    <span>{category.name}</span>
+                    <span className="w-6 text-center text-sm flex-shrink-0">{category.icon}</span>
+                    <span className="text-gray-200">{category.name}</span>
                   </span>
-                  <ChevronRight className={`w-4 h-4 transition-transform ${expandedCategory === category.name ? 'rotate-90' : ''}`} />
+                  <ChevronRight className={`w-4 h-4 flex-shrink-0 transition-transform ${expandedCategory === category.name ? 'rotate-90' : ''}`} />
                 </button>
                 {expandedCategory === category.name && (
-                  <div className="grid grid-cols-6 gap-0.5 p-1 bg-gray-800 rounded mt-1">
-                    {category.symbols.map((symbol) => (
+                  <div 
+                    className={`grid ${getGridClass(category.columns || 6)} gap-0.5 p-1.5 bg-gray-800/80 rounded-lg mt-1 border border-gray-700/50`}
+                  >
+                    {category.symbols.map((symbol, idx) => (
                       <button
-                        key={symbol.latex}
+                        key={`${symbol.latex}-${idx}`}
                         onClick={() => insertSymbol(symbol.latex)}
-                        className="p-1.5 hover:bg-gray-600 rounded text-center text-lg transition-colors"
-                        title={`${symbol.name} (${symbol.latex})`}
+                        className={`
+                          hover:bg-violet-600/40 rounded transition-colors text-center border border-transparent hover:border-violet-500/50
+                          ${symbol.wide 
+                            ? 'px-2 py-1.5 text-xs font-mono whitespace-nowrap overflow-hidden text-ellipsis' 
+                            : 'p-1.5 text-base'
+                          }
+                        `}
+                        title={`${symbol.name}\n${symbol.latex}`}
                       >
-                        {symbol.display}
+                        <span className={symbol.wide ? 'text-xs' : 'text-base'}>
+                          {symbol.display}
+                        </span>
                       </button>
                     ))}
                   </div>
