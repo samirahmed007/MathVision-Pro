@@ -1,388 +1,515 @@
 # MathVision Pro
 
-**AI-Powered Mathematical OCR Platform** - Convert images of mathematical equations to LaTeX, MathML, SymPy, Wolfram, and 10+ other formats.
+<div align="center">
 
-## Overview
+![MathVision Pro](https://img.shields.io/badge/MathVision-Pro-7c3aed?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTMgM2gxOHYxOEgzeiIvPjxwYXRoIGQ9Ik04IDEybDMgM2w1LTUiLz48L3N2Zz4=)
 
-MathVision Pro is an advanced web-based application that leverages artificial intelligence to recognize and convert mathematical expressions from images into multiple machine-readable and human-editable formats. Whether you have handwritten equations from notebooks, printed textbooks, or complex mathematical notation, MathVision Pro intelligently extracts and converts them to your preferred format.
+**Advanced AI-Powered Mathematical OCR Platform**
 
-## ✨ Key Features
+[![React](https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6-646cff?style=flat-square&logo=vite)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06b6d4?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
+[![KaTeX](https://img.shields.io/badge/KaTeX-0.16-green?style=flat-square)](https://katex.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-- **10+ Format Output**: Convert mathematical equations to:
-  - LaTeX (primary format)
-  - MathML (Presentation & Content MathML)
-  - AsciiMath
-  - SymPy (Python)
-  - Wolfram Language
-  - Maple
-  - Markdown
-  - HTML (with embedded MathML)
-  - Typst
-  - Unicode (mathematical symbols)
+[Features](#-features) • [Demo](#-demo) • [Installation](#-installation) • [Usage](#-usage) • [AI Providers](#-supported-ai-providers) • [Output Formats](#-output-formats) • [Keyboard Shortcuts](#-keyboard-shortcuts) • [Themes](#-themes) • [Contributing](#-contributing)
 
-- **8 AI Provider Support**:
-  - Google Gemini (11 models including Gemini 3 Flash Preview)
-  - OpenRouter (Qwen, Llama Vision, Gemma)
-  - Groq (Llama 3.2 Vision models)
-  - OpenAI (GPT-4o, GPT-4 Turbo)
-  - Anthropic Claude (Claude Sonnet 4, Claude 3.5)
-  - Mistral AI (Pixtral models)
-  - Hugging Face (Qwen2 VL, Florence 2)
-  - Ollama (Local models: LLaVA, Llama Vision, Moondream)
+</div>
 
-- **Powerful Features**:
-  - **OCR Processing**: Extract mathematical expressions from images with high accuracy
-  - **Batch Processing**: Process multiple images efficiently with progress tracking
-  - **Screenshot Capture**: Built-in screen capture tool for quick equation extraction
-  - **LaTeX Editor**: Monaco editor with syntax highlighting and real-time preview
-  - **History Management**: Track all processed equations with search and export
-  - **Real-time Preview**: Instant KaTeX rendering of mathematical expressions
-  - **Format Conversion**: Convert LaTeX to 10+ formats with one click
-  - **Provider Testing**: Test API connections before processing
-  - **Customizable Settings**: Configure providers, models, output formats, and editor preferences
-  - **Persistent Storage**: Auto-save settings, API keys, and history locally
-  - **Responsive Design**: Optimized for desktop and tablet devices
-  - **Smooth Animations**: Beautiful UI transitions with Framer Motion
+---
 
-## 🛠️ Technology Stack
+## 📖 Overview
 
-### Frontend
-- **React 19.2.3** - UI framework
-- **TypeScript 5.9.3** - Type-safe JavaScript
-- **Vite 7.2.4** - Lightning-fast build tool
-- **Tailwind CSS 4.1.17** - Utility-first CSS framework
-- **Framer Motion 12.34.0** - Animation library
+**MathVision Pro** is a comprehensive, production-ready web application that converts mathematical expressions from images into multiple digital formats using AI-powered Optical Character Recognition (OCR). It supports 8 AI providers (including local LLM via Ollama), 15+ output formats, batch processing, and a full-featured LaTeX editor with 300+ mathematical symbols.
 
-### Libraries
-- **@google/genai 1.41.0** - Google Gemini AI SDK
-- **@monaco-editor/react 4.7.0** - Advanced code editor
-- **KaTeX 0.16.28** - Fast LaTeX math rendering
-- **Lucide React 0.563.0** - Modern icon library
-- **React Hot Toast 2.6.0** - Toast notifications
-- **React Dropzone 15.0.0** - Drag-and-drop file upload
-- **Zustand 5.0.11** - Lightweight state management
-- **JSZip 3.10.1** - Batch export compression
-- **clsx & tailwind-merge** - Utility class management
+Built with modern web technologies and designed for researchers, students, educators, and professionals who work with mathematical content.
 
-### Build & Development
-- **@tailwindcss/vite 4.1.17** - Tailwind CSS v4 integration
-- **@vitejs/plugin-react 5.1.1** - React Fast Refresh
-- **vite-plugin-singlefile 2.3.0** - Single HTML file build
-- **TypeScript 5.9.3** - Type checking and compilation
+---
+
+## ✨ Features
+
+### 🔍 AI-Powered Math OCR
+- **Multi-provider support** — Use Google Gemini, OpenRouter, Groq, OpenAI, Anthropic, Mistral AI, HuggingFace, or Ollama (local)
+- **Vision AI models** — Leverage state-of-the-art vision-language models for accurate math recognition
+- **Smart error handling** — Automatic retry with exponential backoff for rate-limited requests
+- **Configurable prompts** — Optimized system prompts for maximum OCR accuracy
+
+### 📸 Multiple Input Methods
+- **Drag & Drop** — Drop images directly onto the upload zone
+- **File Picker** — Browse and select image files (PNG, JPG, JPEG, GIF, BMP, WebP, TIFF)
+- **Clipboard Paste** — Press `Ctrl+V` to paste images from clipboard
+- **Screenshot Capture** — Built-in screen capture tool (like Mathpix Snip) with area selection
+- **Camera Capture** — Use webcam or mobile camera to capture equations
+- **URL Import** — Import images from remote URLs
+- **Handwriting Canvas** — Draw equations directly on a canvas (coming soon)
+
+### 📝 15+ Output Formats
+| Category | Formats |
+|----------|---------|
+| **Markup** | LaTeX, MathML, MathML (Presentation), MathML (Content), AsciiMath, Typst |
+| **Document** | Markdown, HTML (XHTML/EPUB), PDF |
+| **Code** | SymPy (Python), Wolfram Language, Maple |
+| **Image** | SVG, PNG |
+| **Text** | Unicode Mathematical Symbols |
+
+### 🔤 MathML Output
+- **MS Word Compatible** — Generates proper MathML that can be pasted directly into Microsoft Word
+- **Hexadecimal Entities** — All non-ASCII characters encoded as `&#x...;` for maximum compatibility
+- **Presentation & Content MathML** — Both visual and semantic MathML variants
+- **Proper Structure** — Uses `<mtable>`, `<mfrac>`, `<msup>`, `<msubsup>`, `<munderover>`, etc.
+
+### 📊 Batch Processing
+- **Process up to 100 images** simultaneously
+- **Configurable concurrency** — Set delay between requests (0.5s to 5s)
+- **Retry logic** — Automatic retry (1-5 attempts) with exponential backoff
+- **Real-time progress** — Live progress bar with success/failure counts
+- **Pause/Resume/Cancel** — Full control over batch jobs
+- **Retry failed items** — Retry only the failed images after completion
+- **Multiple download options:**
+  - Download All (text file with all results)
+  - XHTML Only (MS Word compatible table format)
+  - XHTML + Images (ZIP) — Complete package with images in `images/` folder
+
+### ✏️ Advanced LaTeX Editor
+- **Full-featured editor** with syntax highlighting
+- **300+ mathematical symbols** organized in 13 categories:
+  - Greek Letters (α, β, γ, Γ, Δ, Θ, etc.)
+  - Operators (+, −, ±, ×, ÷, ⊕, ⊗, etc.)
+  - Relations (=, ≠, ≤, ≥, ≡, ≈, ∼, etc.)
+  - Set Theory (∈, ⊂, ∪, ∩, ∅, ℕ, ℤ, ℝ, etc.)
+  - Logic (∀, ∃, ¬, ∧, ∨, ⇒, ⇔, etc.)
+  - Arrows (→, ←, ↑, ⇒, ⇐, ↦, etc.)
+  - Calculus (∫, ∬, ∂, ∇, Σ, ∏, lim, etc.)
+  - Functions (sin, cos, tan, log, exp, det, etc.)
+  - Structures (fractions, roots, powers, matrices, etc.)
+  - Matrices (matrix, pmatrix, bmatrix, vmatrix, cases)
+  - Brackets (parentheses, floor, ceiling, angle, etc.)
+  - Dots & Accents (⋯, …, hat, tilde, bar, vec, etc.)
+  - Spacing (thin, medium, thick, quad, etc.)
+- **Template toolbar** — Quick insert for common structures
+- **Live preview** — Real-time KaTeX rendering as you type
+- **Push to Output** — Convert editor content to all formats with one click
+- **Undo/Redo** — Full history support
+- **Character count** — Shows current LaTeX length
+
+### ⚙️ Provider & Model Management
+- **8 pre-configured AI providers** with 30+ models
+- **Add custom providers** — Configure any OpenAI-compatible API
+- **Add/Edit/Remove models** — Full CRUD for models per provider
+- **Edit base URLs** — Customize API endpoints for proxies or custom servers
+- **API key management** — Secure storage with show/hide toggle
+- **Connection testing** — Verify API keys and provider accessibility
+- **Enable/Disable** — Toggle individual providers and models
+- **Set default model** — Choose your preferred model for OCR
+- **Speed & accuracy ratings** — Visual indicators for each model
+- **Free/Paid indicators** — Clear pricing information
+
+### 📋 Auto-Copy
+- **Automatic clipboard copy** after OCR conversion
+- **Configurable format** — Choose which format to auto-copy (LaTeX, MathML, AsciiMath, etc.)
+- **Toast notifications** — Optional notification when content is copied
+- **Fallback method** — Uses `execCommand('copy')` when `navigator.clipboard` is blocked
+
+### 📜 History
+- **Persistent history** — All OCR results saved locally
+- **Search & filter** — Find previous conversions
+- **Re-use results** — Copy any format from history
+- **Delete entries** — Remove individual history items
+- **Timestamps** — Track when each conversion was made
+
+### 🎨 Themes
+Four beautiful built-in themes:
+- **Dark** — Deep dark background with violet accents (default)
+- **Light** — Clean white background with purple accents
+- **Midnight Blue** — Navy blue tones with cyan accents
+- **Forest Green** — Deep green tones with emerald accents
+
+### ⌨️ Keyboard Shortcuts
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+1` | Switch to OCR tab |
+| `Ctrl+2` | Switch to Batch tab |
+| `Ctrl+3` | Switch to History tab |
+| `Ctrl+4` | Switch to Settings tab |
+| `Ctrl+5` | Switch to About tab |
+| `Ctrl+V` | Paste image from clipboard |
+| `Ctrl+Shift+S` | Screenshot capture |
+| `Ctrl+O` | Open file picker |
+| `Ctrl+Enter` | Process OCR |
+| `Ctrl+E` | Export menu |
+
+---
+
+## 🚀 Demo
+
+### OCR Processing
+1. Upload or paste a math image
+2. Select your AI provider and model
+3. Click "Process OCR" or press `Ctrl+Enter`
+4. Get results in 15+ formats instantly
+5. Edit in the LaTeX Editor if needed
+6. Copy or export in your preferred format
+
+### Batch Processing
+1. Upload up to 100 images
+2. Configure output formats and provider
+3. Set retry attempts and delay
+4. Start processing with real-time progress
+5. Download results as text, XHTML, or ZIP
+
+---
 
 ## 📦 Installation
 
 ### Prerequisites
-- **Node.js 18+** and npm (or yarn/pnpm)
-- **API keys** for desired AI providers (optional - some providers are free)
-- Modern web browser with JavaScript enabled
+- [Node.js](https://nodejs.org/) 18 or higher
+- npm or yarn package manager
 
-### Setup Steps
+### Quick Start
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/samirahmed007/MathVision-Pro.git
-   cd MathVision-Pro
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Start development server**
-   ```bash
-   npm run dev
-   ```
-   The app will be available at `http://localhost:5173`
-
-4. **Configure API keys** (in the app)
-   - Open the app in your browser
-   - Navigate to **Settings** page
-   - Add API keys for your preferred providers
-   - Test connections to verify
-
-### Quick Start (No Installation)
-MathVision Pro can be built as a single HTML file:
 ```bash
-npm run build
-```
-The `dist/index.html` file contains the entire application and can be opened directly in any browser.
+# Clone the repository
+git clone https://github.com/your-username/mathvision-pro.git
+cd mathvision-pro
 
-## 🚀 Building & Deployment
+# Install dependencies
+npm install
 
-### Development Mode
-```bash
+# Start development server
 npm run dev
-```
-Starts Vite development server with:
-- Hot Module Replacement (HMR)
-- Fast refresh for React components
-- Available at `http://localhost:5173`
 
-### Production Build
-```bash
+# Build for production
 npm run build
-```
-Creates optimized production build:
-- Output directory: `dist/`
-- Single HTML file with inlined CSS and JS
-- Minified and optimized for performance
-- Ready for deployment to any static host
 
-### Preview Production Build
-```bash
+# Preview production build
 npm run preview
 ```
-Serves the production build locally for testing before deployment.
 
-### Deployment Options
+### Environment Setup
 
-**Static Hosting** (Recommended)
-- Deploy `dist/index.html` to:
-  - GitHub Pages
-  - Netlify
-  - Vercel
-  - AWS S3 + CloudFront
-  - Any static file server
-
-**Self-Hosting**
-- The single HTML file can run from `file://` protocol
-- Perfect for offline use or air-gapped environments
-- No server required - just open in browser
-
-**Docker** (Optional)
-```dockerfile
-FROM nginx:alpine
-COPY dist /usr/share/nginx/html
-EXPOSE 80
-```
-
-## 📖 Usage Guide
-
-### Main Features
-
-#### 1. **OCR Page** (Primary Feature)
-- Upload an image containing mathematical equations (drag & drop or click)
-- Select your preferred AI provider from 8 options
-- Choose a specific model (40+ models available)
-- Select which output formats you want (10+ formats)
-- Click **Process Image** to extract the equation
-- View real-time KaTeX preview of the rendered equation
-- Edit the extracted LaTeX in the Monaco editor
-- Copy any format to clipboard with one click
-- Download individual formats or all formats as ZIP
-
-#### 2. **Batch Processing**
-- Upload multiple images at once (drag & drop supported)
-- Configure provider, model, and output formats for the batch
-- Process all images sequentially with progress tracking
-- View status for each image (pending/processing/completed/failed)
-- Download results individually or as bulk ZIP export
-- Perfect for digitizing textbooks, homework, or lecture notes
-
-#### 3. **History**
-- Automatically saves all processed equations (up to 100 recent items)
-- View thumbnails and results from past conversions
-- Search and filter history by date or content
-- Re-open past results to view all formats
-- Delete individual items or clear entire history
-- History persists across browser sessions
-
-#### 4. **LaTeX Editor**
-- Full-featured Monaco editor (VS Code engine)
-- Syntax highlighting for LaTeX
-- Real-time mathematical rendering with KaTeX
-- Support for complex LaTeX expressions and environments
-- Convert edited LaTeX to all 10+ formats
-- Dark theme with customizable font size
-- Copy and download capabilities
-
-#### 5. **Settings**
-- **Providers**: Enable/disable AI providers, configure API keys, test connections
-- **Models**: Enable/disable specific models, set default models per provider
-- **Output Formats**: Select which formats to generate by default
-- **Editor**: Customize Monaco editor theme and font size
-- **Auto-Copy**: Enable automatic clipboard copy with preferred format
-- **API Keys**: Securely stored in browser localStorage
-- **Reset**: Restore all settings to defaults
-
-#### 6. **About**
-- Information about MathVision Pro
-- Complete feature list and capabilities
-- Supported formats with descriptions
-- All 8 AI providers with model counts
-- Technology stack details
-- Links to documentation and GitHub
-
-### Keyboard Shortcuts
-The application supports standard browser shortcuts:
-- **Ctrl/Cmd + V**: Paste image from clipboard (in upload area)
-- **Ctrl/Cmd + C**: Copy selected text/code
-- **Ctrl/Cmd + A**: Select all in editor
-- Monaco editor includes full VS Code keyboard shortcuts
-
-## 🔑 AI Provider Configuration
-
-### Supported Providers
-
-1. **Google Gemini** 🔷
-   - 11 models available (Gemini 3 Flash Preview recommended)
-   - Free tier with generous limits
-   - Excellent mathematical OCR accuracy
-   - Get API key: https://aistudio.google.com/app/apikey
-
-2. **OpenRouter** 🌐
-   - Access to multiple free models (Qwen 2.5 VL 72B, Llama Vision)
-   - Single API key for multiple models
-   - Get API key: https://openrouter.ai/keys
-
-3. **Groq** ⚡
-   - Ultra-fast inference with Llama 3.2 Vision models
-   - Free tier available
-   - Get API key: https://console.groq.com/keys
-
-4. **OpenAI** 🧠
-   - GPT-4o and GPT-4 Turbo with vision
-   - Premium accuracy (paid)
-   - Get API key: https://platform.openai.com/api-keys
-
-5. **Anthropic Claude** 🔮
-   - Claude Sonnet 4 and Claude 3.5 models
-   - Excellent reasoning capabilities (paid)
-   - Get API key: https://console.anthropic.com/settings/keys
-
-6. **Mistral AI** 🌀
-   - Pixtral Large and Pixtral 12B vision models
-   - European AI provider (paid)
-   - Get API key: https://console.mistral.ai/api-keys
-
-7. **Hugging Face** 🤗
-   - Free inference API with Qwen2 VL and Florence 2
-   - Community models
-   - Get API key: https://huggingface.co/settings/tokens
-
-8. **Ollama** 🦙
-   - Run models locally (LLaVA, Llama Vision, Moondream)
-   - Complete privacy, no API key needed
-   - Requires Ollama installed: https://ollama.ai
-
-### Adding API Keys
-1. Navigate to **Settings** page
-2. Find your desired AI provider section
-3. Enter your API key in the input field
-4. Click **Test Connection** to verify
-5. Enable/disable specific models as needed
-6. Keys are stored securely in browser local storage
-
-## 📊 Architecture
-
-```
-MathVision-Pro/
-├── src/
-│   ├── components/           # React components
-│   │   ├── OCRPage.tsx      # Main OCR interface with image upload
-│   │   ├── BatchPage.tsx    # Batch processing with progress tracking
-│   │   ├── HistoryPage.tsx  # History management and search
-│   │   ├── SettingsPage.tsx # Provider/model configuration
-│   │   ├── LaTeXEditor.tsx  # Monaco editor with live preview
-│   │   ├── OutputPanel.tsx  # Multi-format output display
-│   │   ├── ImageUpload.tsx  # Drag-and-drop upload component
-│   │   ├── Header.tsx       # Navigation header
-│   │   └── AboutPage.tsx    # About and documentation
-│   ├── services/
-│   │   └── ocrService.ts    # OCR processing engine
-│   │       ├── Provider integrations (8 providers)
-│   │       ├── Format converters (10+ formats)
-│   │       ├── MathML generation (KaTeX-based)
-│   │       └── Screenshot capture
-│   ├── store/
-│   │   └── appStore.ts      # Zustand state management
-│   │       ├── Provider/model configuration
-│   │       ├── Settings persistence
-│   │       ├── History management
-│   │       └── Batch processing state
-│   ├── utils/
-│   │   └── cn.ts            # Class name utilities
-│   ├── App.tsx              # Main app component
-│   ├── main.tsx             # React entry point
-│   └── index.css            # Global styles
-├── index.html               # HTML template
-├── vite.config.ts           # Vite build configuration
-├── tsconfig.json            # TypeScript configuration
-├── tailwind.config.ts       # Tailwind CSS v4 config
-└── package.json             # Dependencies and scripts
-```
-
-## 🎨 UI/UX Features
-
-- **Modern Dark Theme**: Comfortable gray-950 dark interface optimized for extended use
-- **Smooth Transitions**: Page transitions and animations powered by Framer Motion
-- **Toast Notifications**: Non-intrusive status updates with custom styling
-- **Responsive Layout**: Fluid design adapting to desktop and tablet (max-width: 1600px)
-- **Drag & Drop**: Intuitive file upload with React Dropzone
-- **Real-time Preview**: Instant KaTeX rendering with error handling
-- **Monaco Editor**: Professional code editor with syntax highlighting
-- **Tab Navigation**: Clean tab-based interface for different sections
-- **Progress Indicators**: Visual feedback during batch processing
-- **Copy to Clipboard**: One-click copy for all output formats
-
-## 🔒 Privacy & Security
-
-- **Local Storage**: API keys stored securely in browser localStorage
-- **No Server**: All processing happens client-side or via direct API calls
-- **Provider Privacy**: Images only sent to your chosen AI provider
-- **Ollama Support**: Complete privacy with local model execution
-- **Single-File Build**: Deploy as standalone HTML file for air-gapped environments
-- **Open Source**: Full transparency with MIT license
-- **No Tracking**: No analytics or telemetry
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**"API Key Invalid" or Connection Failed**
-- Use the **Test Connection** button in Settings to verify
-- Ensure you've entered the correct API key format
-- Check that the API service is active in your provider account
-- Verify rate limits haven't been exceeded
-- For Ollama: Ensure Ollama is running on http://localhost:11434
-
-**"Image Not Recognized" or Poor Results**
-- Ensure the image contains clear, high-contrast mathematical notation
-- Try higher resolution images (recommended: 1000px+ width)
-- Supported formats: PNG, JPEG, GIF, WEBP
-- Try different AI models - some excel at handwritten vs. printed math
-- Use Google Gemini or OpenRouter Qwen models for best free results
-
-**"LaTeX Output Not Rendering"**
-- KaTeX may not support all LaTeX packages
-- Check browser console for specific rendering errors
-- Try editing the LaTeX in the Monaco editor
-- Use the format converter to try alternative outputs
-
-**"Batch Processing Stuck"**
-- Check browser console for errors
-- Verify API key is valid and has sufficient quota
-- Try processing images individually to identify problematic files
-- Reduce batch size if hitting rate limits
-
-## 📝 License
-
-This project is open-source and available under the MIT License.
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to:
-- Report bugs and issues
-- Suggest new features
-- Submit pull requests
-- Improve documentation
-
-## 📧 Contact & Support
-
-For questions, suggestions, or support, please open an issue on the GitHub repository.
+No environment variables are required. API keys are configured directly in the application's Settings page and stored securely in the browser's local storage.
 
 ---
 
-**MathVision Pro** - Making mathematics digital, one equation at a time. ✨
+## 🔧 Usage
+
+### 1. Configure an AI Provider
+
+1. Open the **Settings** tab (`Ctrl+4`)
+2. Find your preferred provider (e.g., Google Gemini)
+3. Click the key icon and enter your API key
+4. Click **Test Connection** to verify
+5. Set your preferred model as default
+6. Click **Save Changes**
+
+### 2. Get an API Key
+
+| Provider | Free Tier | Get API Key |
+|----------|-----------|-------------|
+| [Google Gemini](https://ai.google.dev/) | ✅ Yes | [Get Key](https://aistudio.google.com/app/apikey) |
+| [OpenRouter](https://openrouter.ai/) | ✅ Yes | [Get Key](https://openrouter.ai/keys) |
+| [Groq](https://groq.com/) | ✅ Yes | [Get Key](https://console.groq.com/keys) |
+| [HuggingFace](https://huggingface.co/) | ✅ Yes | [Get Key](https://huggingface.co/settings/tokens) |
+| [OpenAI](https://openai.com/) | ❌ Paid | [Get Key](https://platform.openai.com/api-keys) |
+| [Anthropic](https://anthropic.com/) | ❌ Paid | [Get Key](https://console.anthropic.com/settings/keys) |
+| [Mistral AI](https://mistral.ai/) | ❌ Paid | [Get Key](https://console.mistral.ai/api-keys) |
+| [Ollama](https://ollama.ai/) | ✅ Local | [Download](https://ollama.ai/download) |
+
+### 3. Process an Image
+
+```
+1. Go to OCR tab
+2. Drop an image or click Upload
+3. Select provider & model from dropdowns
+4. Click "Process OCR"
+5. View results in Output panel
+6. Copy or export as needed
+```
+
+### 4. Batch Process Multiple Images
+
+```
+1. Go to Batch tab
+2. Drop up to 100 images
+3. Select output formats
+4. Configure retry attempts & delay
+5. Click "Start Batch"
+6. Download results when complete
+```
+
+---
+
+## 🤖 Supported AI Providers
+
+### Google Gemini
+- **Models:** Gemini 3 Flash Preview, Gemini 2.5 Flash Lite, Gemini 2.5 Pro Preview, Gemini 2.0 Flash, and more
+- **Free tier:** Yes (with rate limits)
+- **API:** Google GenAI SDK (`@google/genai`)
+- **Best for:** High accuracy, free usage
+
+### OpenRouter
+- **Models:** Qwen 2.5 VL 72B, Qwen 2.5 VL 32B, Gemma 3 27B, Llama 3.2 11B Vision, Mistral Small 3.1
+- **Free tier:** Yes (free models available)
+- **API:** OpenAI-compatible
+- **Best for:** Access to multiple model providers through one API
+
+### Groq
+- **Models:** Llama 3.2 90B Vision, Llama 3.2 11B Vision
+- **Free tier:** Yes
+- **API:** OpenAI-compatible
+- **Best for:** Ultra-fast inference speed
+
+### HuggingFace
+- **Models:** Qwen2 VL 72B, Florence 2 Large
+- **Free tier:** Yes
+- **API:** Inference API
+- **Best for:** Open-source models
+
+### OpenAI
+- **Models:** GPT-4o, GPT-4o Mini
+- **Free tier:** No (paid)
+- **API:** OpenAI API
+- **Best for:** Highest accuracy on complex expressions
+
+### Anthropic
+- **Models:** Claude Sonnet 4, Claude 3.5 Haiku
+- **Free tier:** No (paid)
+- **API:** Anthropic API
+- **Best for:** Detailed analysis and explanation
+
+### Mistral AI
+- **Models:** Pixtral Large, Pixtral 12B
+- **Free tier:** No (paid)
+- **API:** Mistral API
+- **Best for:** European AI provider, good accuracy
+
+### Ollama (Local)
+- **Models:** LLaVA 34B/13B/7B, Llama 3.2 Vision 11B, Moondream
+- **Free tier:** Yes (runs locally)
+- **API:** Ollama REST API
+- **Best for:** Offline usage, privacy, no API costs
+
+---
+
+## 📤 Output Formats
+
+### Markup Formats
+- **LaTeX** — Standard mathematical typesetting (`\frac{a}{b}`, `\int_0^1`, etc.)
+- **MathML** — XML-based math markup, MS Word compatible with hex entities
+- **MathML (Presentation)** — Visual rendering MathML
+- **MathML (Content)** — Semantic meaning MathML
+- **AsciiMath** — Simple text-based math notation
+- **Typst** — Modern typesetting system markup
+
+### Document Formats
+- **Markdown** — With LaTeX math blocks (`$$...$$`)
+- **HTML** — XHTML/EPUB format with embedded MathML
+- **PDF** — Document generation (via browser print)
+
+### Code Formats
+- **SymPy** — Python symbolic math expressions
+- **Wolfram** — Mathematica language syntax
+- **Maple** — Maple CAS expressions
+
+### Image Formats
+- **SVG** — Scalable vector graphics
+- **PNG** — Raster image export
+
+### Text Formats
+- **Unicode** — Mathematical Unicode symbols (∫, ∑, √, etc.)
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+### Navigation
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+1` | OCR tab |
+| `Ctrl+2` | Batch Processing tab |
+| `Ctrl+3` | History tab |
+| `Ctrl+4` | Settings tab |
+| `Ctrl+5` | About tab |
+
+### OCR Operations
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+V` | Paste image from clipboard |
+| `Ctrl+Shift+S` | Screenshot capture |
+| `Ctrl+O` | Open file picker |
+| `Ctrl+Enter` | Process OCR |
+| `Ctrl+E` | Export menu |
+
+### Editor
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+Z` | Undo |
+| `Ctrl+Shift+Z` | Redo |
+| `Ctrl+C` | Copy selected |
+
+---
+
+## 🎨 Themes
+
+MathVision Pro includes 4 built-in themes:
+
+| Theme | Description |
+|-------|-------------|
+| 🌙 **Dark** | Deep dark background with violet accents (default) |
+| ☀️ **Light** | Clean white background with purple accents |
+| 🌊 **Midnight Blue** | Navy blue tones with cyan accents |
+| 🌲 **Forest Green** | Deep green tones with emerald accents |
+
+Change themes in **Settings** → **App Theme** section.
+
+---
+
+## 🏗️ Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| [React 19](https://react.dev/) | UI framework |
+| [TypeScript 5.6](https://www.typescriptlang.org/) | Type safety |
+| [Vite 6](https://vitejs.dev/) | Build tool & dev server |
+| [Tailwind CSS 4](https://tailwindcss.com/) | Utility-first CSS |
+| [Zustand](https://zustand-demo.pmnd.rs/) | State management with persistence |
+| [KaTeX](https://katex.org/) | LaTeX rendering & MathML generation |
+| [Google GenAI SDK](https://www.npmjs.com/package/@google/genai) | Google Gemini API |
+| [JSZip](https://stuk.github.io/jszip/) | ZIP file generation |
+| [Lucide React](https://lucide.dev/) | Icon library |
+
+---
+
+## 📁 Project Structure
+
+```
+mathvision-pro/
+├── public/                  # Static assets
+├── src/
+│   ├── components/
+│   │   ├── Header.tsx       # Navigation bar with shortcuts & tooltips
+│   │   ├── ImageUpload.tsx  # Drag & drop, paste, camera, URL input
+│   │   ├── OutputPanel.tsx  # Multi-format output with copy & export
+│   │   ├── LaTeXEditor.tsx  # Full editor with 300+ symbols
+│   │   ├── OCRPage.tsx      # Main OCR processing page
+│   │   ├── BatchPage.tsx    # Batch processing with retry logic
+│   │   ├── HistoryPage.tsx  # OCR history with search
+│   │   ├── SettingsPage.tsx # Provider, model & theme settings
+│   │   └── AboutPage.tsx    # About with linked providers
+│   ├── services/
+│   │   └── ocrService.ts   # AI provider integration & format conversion
+│   ├── store/
+│   │   └── useStore.ts     # Zustand state management
+│   ├── App.tsx             # Root component with theme support
+│   ├── main.tsx            # Entry point
+│   └── index.css           # Global styles & theme variables
+├── index.html              # HTML template
+├── package.json            # Dependencies
+├── tsconfig.json           # TypeScript config
+├── vite.config.ts          # Vite config
+├── vercel.json             # Vercel deployment config
+└── README.md               # This file
+```
+
+---
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+1. Push your code to GitHub
+2. Go to [vercel.com](https://vercel.com)
+3. Import your GitHub repository
+4. Vercel auto-detects Vite — no configuration needed
+5. Click **Deploy**
+
+The `vercel.json` file is already configured for SPA routing.
+
+### Manual Build
+
+```bash
+# Build the project
+npm run build
+
+# The output is in the dist/ folder
+# Serve with any static file server
+npx serve dist
+```
+
+### Docker
+
+```dockerfile
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+---
+
+## 🔒 Security
+
+- **API keys** are stored in browser's local storage (never sent to any server)
+- **No backend server** — All processing happens client-side via direct API calls
+- **CORS-safe** — Uses provider APIs directly from the browser
+- **No telemetry** — No data collection or tracking
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👨‍💻 Developer
+
+**Samir Uddin Ahmed**
+
+Full-Stack Developer & AI Enthusiast
+
+- 📧 Email: [samiruddinahmed@example.com](mailto:samiruddinahmed@example.com)
+- 🐙 GitHub: [github.com/samiruddinahmed](https://github.com/samiruddinahmed)
+- 💼 LinkedIn: [linkedin.com/in/samiruddinahmed](https://linkedin.com/in/samiruddinahmed)
+- 🌐 Website: [samiruddinahmed.dev](https://samiruddinahmed.dev)
+
+---
+
+## 🙏 Acknowledgments
+
+- [KaTeX](https://katex.org/) — Fast math typesetting for the web
+- [Google Gemini](https://ai.google.dev/) — AI vision models
+- [Lucide](https://lucide.dev/) — Beautiful open-source icons
+- [Zustand](https://zustand-demo.pmnd.rs/) — Lightweight state management
+- [Vite](https://vitejs.dev/) — Next-generation build tool
+
+---
+
+<div align="center">
+
+**Made with ❤️ by Samir Uddin Ahmed**
+
+⭐ Star this repo if you find it useful!
+
+</div>

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { Header } from '@/components/Header';
 import { OCRPage } from '@/components/OCRPage';
@@ -9,22 +10,37 @@ import { useAppStore } from '@/store/appStore';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function App() {
-  const { activeTab } = useAppStore();
+  const { activeTab, settings } = useAppStore();
+
+  // Apply theme data attribute to html element
+  useEffect(() => {
+    const theme = settings.appTheme || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    // Also set body and root backgrounds
+    document.body.style.backgroundColor = 'var(--color-bg-primary)';
+    document.body.style.color = 'var(--color-text-primary)';
+  }, [settings.appTheme]);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col">
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: 'var(--color-bg-primary)',
+      color: 'var(--color-text-primary)',
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
       <Toaster
         position="top-right"
         toastOptions={{
           className: '',
           style: {
-            background: '#1f2937',
-            color: '#f3f4f6',
-            border: '1px solid #374151',
+            background: 'var(--color-bg-tertiary)',
+            color: 'var(--color-text-primary)',
+            border: '1px solid var(--color-border)',
           },
           success: {
             iconTheme: {
-              primary: '#8b5cf6',
+              primary: 'var(--color-accent)',
               secondary: '#fff',
             },
           },
@@ -39,7 +55,7 @@ export function App() {
       
       <Header />
       
-      <main className="flex-1 w-full">
+      <main style={{ flex: 1, width: '100%' }}>
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8 py-6">
           <AnimatePresence mode="wait">
             <motion.div
@@ -61,17 +77,20 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 bg-gray-900/50">
+      <footer style={{
+        borderTop: '1px solid var(--color-border)',
+        backgroundColor: 'var(--color-bg-card)',
+      }}>
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm" style={{ color: 'var(--color-text-dim)' }}>
             <p>
               MathVision Pro • AI-Powered Mathematical OCR Platform
             </p>
             <div className="flex items-center gap-4 text-xs">
               <span>8 AI Providers</span>
-              <span className="w-1 h-1 rounded-full bg-gray-600" />
+              <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--color-text-dim)' }} />
               <span>10+ Output Formats</span>
-              <span className="w-1 h-1 rounded-full bg-gray-600" />
+              <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--color-text-dim)' }} />
               <span>Batch Processing</span>
             </div>
           </div>

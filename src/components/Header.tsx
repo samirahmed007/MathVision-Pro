@@ -1,26 +1,67 @@
 import { Scan, History, Settings, Layers, Menu, X, Sparkles, Info } from 'lucide-react';
 import { useAppStore } from '@/store/appStore';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export function Header() {
   const { activeTab, setActiveTab } = useAppStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showTooltip, setShowTooltip] = useState<string | null>(null);
 
   const tabs = [
-    { id: 'ocr' as const, label: 'OCR', icon: Scan, description: 'Convert images to LaTeX' },
-    { id: 'batch' as const, label: 'Batch', icon: Layers, description: 'Process multiple images' },
-    { id: 'history' as const, label: 'History', icon: History, description: 'View past conversions' },
-    { id: 'settings' as const, label: 'Settings', icon: Settings, description: 'Configure providers' },
-    { id: 'about' as const, label: 'About', icon: Info, description: 'About MathVision Pro' },
+    { id: 'ocr' as const, label: 'OCR', icon: Scan, shortcut: 'Alt+1', description: 'Convert images to math (Alt+1)' },
+    { id: 'batch' as const, label: 'Batch', icon: Layers, shortcut: 'Alt+2', description: 'Batch process images (Alt+2)' },
+    { id: 'history' as const, label: 'History', icon: History, shortcut: 'Alt+3', description: 'View past conversions (Alt+3)' },
+    { id: 'settings' as const, label: 'Settings', icon: Settings, shortcut: 'Alt+4', description: 'Configure providers (Alt+4)' },
+    { id: 'about' as const, label: 'About', icon: Info, shortcut: 'Alt+5', description: 'About MathVision Pro (Alt+5)' },
   ];
+
+  // Keyboard shortcuts for navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+        const tabMap: Record<string, typeof tabs[0]['id']> = {
+          '1': 'ocr',
+          '2': 'batch',
+          '3': 'history',
+          '4': 'settings',
+          '5': 'about',
+        };
+        const tab = tabMap[e.key];
+        if (tab) {
+          e.preventDefault();
+          setActiveTab(tab);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [setActiveTab]);
+
+  const handleMouseEnter = (tabId: string) => {
+    setHoveredTab(tabId);
+    tooltipTimerRef.current = setTimeout(() => {
+      setShowTooltip(tabId);
+    }, 500);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredTab(null);
+    setShowTooltip(null);
+    if (tooltipTimerRef.current) {
+      clearTimeout(tooltipTimerRef.current);
+      tooltipTimerRef.current = null;
+    }
+  };
 
   return (
     <header style={{
       position: 'sticky',
       top: 0,
       zIndex: 50,
-      borderBottom: '1px solid #1f2937',
-      backgroundColor: 'rgba(3, 7, 18, 0.95)',
+      borderBottom: '1px solid var(--color-border)',
+      backgroundColor: 'var(--color-header-bg)',
       backdropFilter: 'blur(8px)',
       WebkitBackdropFilter: 'blur(8px)',
     }}>
@@ -44,8 +85,8 @@ export function Header() {
               alignItems: 'center',
               justifyContent: 'center',
               borderRadius: '12px',
-              background: 'linear-gradient(to bottom right, #8b5cf6, #4f46e5)',
-              boxShadow: '0 4px 14px rgba(139, 92, 246, 0.25)',
+              background: 'linear-gradient(to bottom right, var(--color-accent), var(--color-accent-secondary))',
+              boxShadow: '0 4px 14px var(--color-accent-glow)',
             }}>
               <Sparkles style={{ height: '20px', width: '20px', color: 'white' }} />
             </div>
@@ -53,13 +94,13 @@ export function Header() {
               <h1 style={{
                 fontSize: '18px',
                 fontWeight: 700,
-                color: 'white',
+                color: 'var(--color-text-primary)',
                 margin: 0,
                 lineHeight: '1.2',
               }}>MathVision Pro</h1>
               <p style={{
                 fontSize: '12px',
-                color: '#6b7280',
+                color: 'var(--color-text-dim)',
                 margin: 0,
                 lineHeight: '1.2',
               }}>AI Math OCR</p>
@@ -71,47 +112,87 @@ export function Header() {
             display: 'flex',
             alignItems: 'center',
             gap: '4px',
-            backgroundColor: 'rgba(17, 24, 39, 0.5)',
+            backgroundColor: 'var(--color-nav-bg)',
             padding: '4px',
             borderRadius: '12px',
           }}>
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
+              const isHovered = hoveredTab === tab.id;
               return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    backgroundColor: isActive ? '#7c3aed' : 'transparent',
-                    color: isActive ? 'white' : '#9ca3af',
-                    boxShadow: isActive ? '0 4px 14px rgba(124, 58, 237, 0.25)' : 'none',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.color = 'white';
-                      e.currentTarget.style.backgroundColor = '#1f2937';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.color = '#9ca3af';
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }
-                  }}
-                >
-                  <tab.icon style={{ height: '16px', width: '16px' }} />
-                  {tab.label}
-                </button>
+                <div key={tab.id} style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => setActiveTab(tab.id)}
+                    onMouseEnter={() => handleMouseEnter(tab.id)}
+                    onMouseLeave={handleMouseLeave}
+                    title={tab.description}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      backgroundColor: isActive ? 'var(--color-accent)' : (isHovered ? 'var(--color-nav-hover)' : 'transparent'),
+                      color: isActive ? 'white' : (isHovered ? 'var(--color-text-primary)' : 'var(--color-text-muted)'),
+                      boxShadow: isActive ? '0 4px 14px var(--color-accent-glow)' : 'none',
+                    }}
+                  >
+                    <tab.icon style={{ height: '16px', width: '16px' }} />
+                    {tab.label}
+                  </button>
+                  {/* Tooltip */}
+                  {showTooltip === tab.id && !isActive && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      marginTop: '8px',
+                      padding: '6px 12px',
+                      backgroundColor: 'var(--color-bg-elevated)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: '8px',
+                      whiteSpace: 'nowrap',
+                      zIndex: 100,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                      pointerEvents: 'none',
+                    }}>
+                      <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
+                        {tab.description}
+                      </div>
+                      <div style={{
+                        display: 'inline-block',
+                        marginTop: '2px',
+                        padding: '1px 6px',
+                        backgroundColor: 'var(--color-bg-secondary)',
+                        borderRadius: '4px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: 'var(--color-accent)',
+                        fontFamily: 'monospace',
+                      }}>
+                        {tab.shortcut}
+                      </div>
+                      {/* Arrow */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '-4px',
+                        left: '50%',
+                        transform: 'translateX(-50%) rotate(45deg)',
+                        width: '8px',
+                        height: '8px',
+                        backgroundColor: 'var(--color-bg-elevated)',
+                        borderTop: '1px solid var(--color-border)',
+                        borderLeft: '1px solid var(--color-border)',
+                      }} />
+                    </div>
+                  )}
+                </div>
               );
             })}
           </nav>
@@ -123,7 +204,7 @@ export function Header() {
             style={{
               display: 'none',
               padding: '8px',
-              color: '#9ca3af',
+              color: 'var(--color-text-muted)',
               borderRadius: '8px',
               border: 'none',
               backgroundColor: 'transparent',
@@ -138,7 +219,7 @@ export function Header() {
         {mobileMenuOpen && (
           <nav style={{
             padding: '16px 0',
-            borderTop: '1px solid #1f2937',
+            borderTop: '1px solid var(--color-border)',
           }}>
             <div style={{
               display: 'grid',
@@ -166,12 +247,13 @@ export function Header() {
                       fontWeight: 500,
                       border: 'none',
                       cursor: 'pointer',
-                      backgroundColor: isActive ? '#7c3aed' : 'rgba(31, 41, 55, 0.5)',
-                      color: isActive ? 'white' : '#9ca3af',
+                      backgroundColor: isActive ? 'var(--color-accent)' : 'var(--color-nav-bg)',
+                      color: isActive ? 'white' : 'var(--color-text-muted)',
                     }}
                   >
                     <tab.icon style={{ height: '20px', width: '20px' }} />
                     <span>{tab.label}</span>
+                    <span style={{ fontSize: '10px', opacity: 0.6 }}>{tab.shortcut}</span>
                   </button>
                 );
               })}

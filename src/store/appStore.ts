@@ -65,6 +65,42 @@ export interface BatchJob {
   completedAt?: Date;
 }
 
+export type AppTheme = 'dark' | 'midnight' | 'emerald' | 'sunset';
+
+export interface ThemeConfig {
+  id: AppTheme;
+  name: string;
+  description: string;
+  preview: { bg: string; accent: string; card: string; text: string };
+}
+
+export const APP_THEMES: ThemeConfig[] = [
+  { 
+    id: 'dark', 
+    name: 'Dark Violet', 
+    description: 'Classic dark theme with violet accents',
+    preview: { bg: '#030712', accent: '#8b5cf6', card: '#111827', text: '#f9fafb' }
+  },
+  { 
+    id: 'midnight', 
+    name: 'Midnight Blue', 
+    description: 'Deep blue with cyan highlights',
+    preview: { bg: '#0a0e1a', accent: '#06b6d4', card: '#0f172a', text: '#e2e8f0' }
+  },
+  { 
+    id: 'emerald', 
+    name: 'Forest Green', 
+    description: 'Dark green with emerald accents',
+    preview: { bg: '#051007', accent: '#10b981', card: '#0a1f10', text: '#ecfdf5' }
+  },
+  { 
+    id: 'sunset', 
+    name: 'Warm Sunset', 
+    description: 'Warm dark theme with amber glow',
+    preview: { bg: '#120c04', accent: '#f59e0b', card: '#1c1208', text: '#fef3c7' }
+  },
+];
+
 export interface UserSettings {
   defaultProviderId: string;
   defaultModelId: string;
@@ -74,7 +110,7 @@ export interface UserSettings {
   showAutoCopyNotification: boolean;
   editorTheme: 'vs-dark' | 'vs-light';
   editorFontSize: number;
-  theme: 'light' | 'dark' | 'system';
+  appTheme: AppTheme;
   selectedOutputFormats: string[];
 }
 
@@ -303,7 +339,7 @@ const defaultSettings: UserSettings = {
   showAutoCopyNotification: true,
   editorTheme: 'vs-dark',
   editorFontSize: 14,
-  theme: 'dark',
+  appTheme: 'dark',
   selectedOutputFormats: ['latex', 'mathml', 'asciimath', 'markdown'],
 };
 
