@@ -551,18 +551,12 @@ const LaTeXEditor: React.FC<LaTeXEditorProps> = ({ initialValue = '', onChange, 
     }
   };
 
-  // Get grid class based on column count
-  const getGridClass = (cols: number) => {
-    switch (cols) {
-      case 2: return 'grid-cols-2';
-      case 3: return 'grid-cols-3';
-      case 4: return 'grid-cols-4';
-      case 5: return 'grid-cols-5';
-      case 6: return 'grid-cols-6';
-      case 7: return 'grid-cols-7';
-      default: return 'grid-cols-6';
-    }
-  };
+  // Use inline style for grid columns to avoid dynamic Tailwind class issues in production
+  const getGridStyle = (cols: number): React.CSSProperties => ({
+    display: 'grid',
+    gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+    gap: '2px',
+  });
 
   return (
     <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
@@ -750,7 +744,8 @@ const LaTeXEditor: React.FC<LaTeXEditorProps> = ({ initialValue = '', onChange, 
                 </button>
                 {expandedCategory === category.name && (
                   <div 
-                    className={`grid ${getGridClass(category.columns || 6)} gap-0.5 p-1.5 bg-gray-800/80 rounded-lg mt-1 border border-gray-700/50`}
+                    style={getGridStyle(category.columns || 6)}
+                    className="p-1.5 rounded-lg mt-1 border"
                   >
                     {category.symbols.map((symbol, idx) => (
                       <button
